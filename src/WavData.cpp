@@ -1,5 +1,5 @@
 #include <node.h>
-#include "NodeWavData.h"
+#include "WavData.h"
 
 bool isBigEndian() {
 	int a=1;

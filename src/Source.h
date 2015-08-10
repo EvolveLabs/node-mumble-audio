@@ -15,7 +15,7 @@
 	#include <AL/alc.h>
 #endif
 
-#include "NodeWavData.h"
+#include "WavData.h"
 
 using namespace v8;
 using namespace node;

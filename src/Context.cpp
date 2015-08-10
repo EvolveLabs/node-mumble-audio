@@ -1,4 +1,4 @@
-#include "NodeOpenALContext.h"
+#include "Context.h"
 
 using namespace v8;
 using namespace node;

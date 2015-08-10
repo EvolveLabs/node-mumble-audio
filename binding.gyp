@@ -4,11 +4,11 @@
       'target_name': 'openal-<@(target_arch)',
       'sources': [ 
         "src/openal.cc", 
-        "src/NodeWavData.cpp", 
-        "src/NodeOpenALDevice.cpp", 
-        "src/NodeOpenALContext.cpp", 
-        "src/NodeOpenALSource.cpp",
-        "src/NodeOpenALStream.cpp"
+        "src/WavData.cpp", 
+        "src/Device.cpp", 
+        "src/Context.cpp", 
+        "src/Source.cpp",
+        "src/Stream.cpp"
       ],
       'include_dirs': [
         "deps/includes",

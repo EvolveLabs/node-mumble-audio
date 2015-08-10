@@ -1,7 +1,7 @@
-#include <node.h>
-#include "NodeOpenAlDevice.h"
+#include "Device.h"
 #include <vector>
 
+using namespace std;
 using namespace v8;
 
 //vector<NodeOpenALDevice*> NodeOpenALDevice::devices;

@@ -15,7 +15,7 @@
 	#include <AL/alc.h>
 #endif
 
-#include "NodeOpenALDevice.h"
+#include "Device.h"
 
 using namespace v8;
 using namespace node;

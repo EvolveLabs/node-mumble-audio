@@ -13,11 +13,11 @@
 	#include <AL/alc.h>
 #endif
 
-#include "NodeWavData.h"
-#include "NodeOpenALDevice.h"
-#include "NodeOpenALContext.h"
-#include "NodeOpenALSource.h"
-#include "NodeOpenALStream.h"
+#include "WavData.h"
+#include "Device.h"
+#include "Context.h"
+#include "Source.h"
+#include "Stream.h"
 
 using namespace v8;
 using namespace std;

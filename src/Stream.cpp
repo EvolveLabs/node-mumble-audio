@@ -1,6 +1,6 @@
 #include <node.h>
 #include <node_buffer.h>
-#include "NodeOpenALStream.h"
+#include "Stream.h"
 
 using namespace v8;
 using namespace std;

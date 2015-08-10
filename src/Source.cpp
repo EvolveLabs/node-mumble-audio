@@ -1,4 +1,4 @@
-#include "NodeOpenALSource.h"
+#include "Source.h"
 
 using namespace v8;
 using namespace node;
