@@ -1,5 +1,7 @@
 #include <node.h>
+#include <nan.h>
 #include <v8.h>
+#include <delay_load_hook.h>
 
 #ifdef __APPLE__
 	#include <OpenAL/al.h>
@@ -63,49 +65,53 @@ void PrintOpenALInfo()
 
 
 // --------------------------------------------------
-Handle<Value> SetListenerOrientation(const Arguments& args) {
-	v8::HandleScope scope;
+NAN_METHOD(SetListenerOrientation) {
+	NanScope();
+
 	double x = args[0]->NumberValue();
 	double y = args[1]->NumberValue();
 	double z = args[2]->NumberValue();
 	float o[] = {x, y, z, 0, 1, 0};
 	alListenerfv(AL_ORIENTATION, o);
-	return scope.Close(v8::Undefined());
+
+	NanReturnUndefined();
 }
 
 // --------------------------------------------------
-Handle<Value> SetListenerPosition(const Arguments& args) {
-	v8::HandleScope scope;
+NAN_METHOD(SetListenerPosition) {
+	NanScope();
+
 	double x = args[0]->NumberValue();
 	double y = args[1]->NumberValue();
 	double z = args[2]->NumberValue();
 	float p[] = {x, y, z, 0, 1, 0};
 	alListenerfv(AL_POSITION, p);
-	return scope.Close(v8::Undefined());
+
+	NanReturnUndefined();
 }
 
 // --------------------------------------------------
-Handle<Value> MakeContextCurrent(const Arguments& args) {
-	v8::HandleScope scope;
+NAN_METHOD(MakeContextCurrent) {
+	NanScope();
 
-	if (args.Length() < 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-		return scope.Close( Undefined() );
+	if (args.Length() != 1) {
+		NanThrowTypeError("Expected a single Context argument.");
+		NanReturnUndefined();
 	}
 
 	if ( !args[0]->IsObject() ) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close( Undefined() );
+		NanThrowTypeError("Expected a single Context argument.");
+		NanReturnUndefined();
 	}
 
 	NodeOpenALContext* ctx = node::ObjectWrap::Unwrap<NodeOpenALContext>(args[0]->ToObject());
 	alcMakeContextCurrent(ctx->context);
 
-	return scope.Close(v8::Undefined());
+	NanReturnUndefined();
 }
 
 // --------------------------------------------------
-void Init(Handle<Object> exports) {
+void NodeInit(Handle<Object> exports) {
 	PrintOpenALInfo();
 	
 	NodeWavData::Init(exports);
@@ -114,9 +120,9 @@ void Init(Handle<Object> exports) {
 	NodeOpenALSource::Init(exports);
 	NodeOpenALStream::Init(exports);
 	
-	exports->Set( String::NewSymbol("MakeContextCurrent"), FunctionTemplate::New(MakeContextCurrent)->GetFunction() );
-	exports->Set( String::NewSymbol("SetListenerPosition"), FunctionTemplate::New(SetListenerPosition)->GetFunction() );
-	exports->Set( String::NewSymbol("SetListenerOrientation"), FunctionTemplate::New(SetListenerOrientation)->GetFunction() );
+	exports->Set( NanNew<String>("MakeContextCurrent"), NanNew<FunctionTemplate>(MakeContextCurrent)->GetFunction() );
+	exports->Set( NanNew<String>("SetListenerPosition"), NanNew<FunctionTemplate>(SetListenerPosition)->GetFunction() );
+	exports->Set( NanNew<String>("SetListenerOrientation"), NanNew<FunctionTemplate>(SetListenerOrientation)->GetFunction() );
 }
 
 
@@ -124,4 +130,4 @@ void Init(Handle<Object> exports) {
 /**
 *	Initialize
 */
-NODE_MODULE(openal, Init)
+NODE_MODULE(openal, NodeInit)

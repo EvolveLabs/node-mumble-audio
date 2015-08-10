@@ -1,7 +1,7 @@
 {
   'targets': [
     {
-      'target_name': 'openal',
+      'target_name': 'openal-<@(target_arch)',
       'sources': [ 
         "src/openal.cc", 
         "src/NodeWavData.cpp", 
@@ -9,7 +9,12 @@
         "src/NodeOpenALContext.cpp", 
         "src/NodeOpenALSource.cpp",
         "src/NodeOpenALStream.cpp"
-        ],
+      ],
+      'include_dirs': [
+        "deps/includes",
+        "<!(node -e \"require('nan')\")",
+        "<!(node -e \"require('electron-updater-tools')\")"
+      ],
       'conditions': [
         ['OS=="linux"',
           {
@@ -46,11 +51,39 @@
             'defines': [
               '__WINDOWS_MM__'
             ],
-            'link_settings': {
-              'libraries': [
-                '-lAL.lib'
-              ],
-            }
+            'libraries': [
+              "<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
+            ],
+            'msvs_settings': {
+                'VCLinkerTool': {
+                    'DelayLoadDLLs': [ 'node.dll', 'iojs.exe', 'node.exe' ],
+                    'AdditionalOptions': [ '/ignore:4199' ],
+                },
+            },
+          }
+        ]
+      ]
+    },
+
+    # deploy dependencies
+    {
+      'target_name': 'openal_deploy',
+      'type': 'none',
+      'dependencies': ['openal-<@(target_arch)'],
+      'target_conditions': [
+          [ 'OS=="win"', {
+            'actions': [
+              {
+                'action_name': 'soft_oal',
+                'inputs': [
+                    '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll'
+                ],
+                'outputs': [
+                    '<@(PRODUCT_DIR)/soft_oal.dll'
+                ],
+                'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll', '<@(PRODUCT_DIR)/soft_oal.dll']
+              }
+            ]
           }
         ]
       ]

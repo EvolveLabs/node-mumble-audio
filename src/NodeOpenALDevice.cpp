@@ -25,21 +25,19 @@ NodeOpenALDevice::~NodeOpenALDevice() {
 // ------------------------------------------
 void NodeOpenALDevice::Init(Handle<Object> exports) {
 	// Prepare constructor template
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->SetClassName(String::NewSymbol("Device"));
+	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+	tpl->SetClassName(NanNew<String>("Device"));
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-	Persistent<Function> constructor = Persistent<Function>::New(tpl->GetFunction());
-	exports->Set(String::NewSymbol("Device"), constructor);
+	exports->Set(NanNew<String>("Device"), tpl->GetFunction());
 }
 
 // ------------------------------------------
-Handle<Value> NodeOpenALDevice::New(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALDevice::New) {
+	NanScope();
 
 	NodeOpenALDevice* obj = new NodeOpenALDevice();
 	//devices.push_back( obj );
 	obj->Wrap( args.This() );
-
-	return args.This();
+	NanReturnValue(args.This());
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <node.h>
+#include <node_object_wrap.h>
+#include <nan.h>
 #include <v8.h>
 
 #ifdef __APPLE__
@@ -16,20 +18,21 @@
 #include "NodeWavData.h"
 
 using namespace v8;
+using namespace node;
 using namespace std;
 
-class NodeOpenALSource : public node::ObjectWrap {
+class NodeOpenALSource : public ObjectWrap {
 	public:
-		static void Init(v8::Handle<v8::Object> exports);
+		static void Init(Handle<Object> exports);
 
 	private:
 		NodeOpenALSource( NodeWavData* data );
 		~NodeOpenALSource();
 
-		static v8::Handle<v8::Value> New(const v8::Arguments& args);
-		static v8::Handle<v8::Value> Play(const v8::Arguments& args);
-		static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
-		static v8::Handle<v8::Value> SetLoop(const v8::Arguments& args);
+		static NAN_METHOD(New);
+		static NAN_METHOD(Play);
+		static NAN_METHOD(SetPosition);
+		static NAN_METHOD(SetLoop);
 
 		void play();
 		void setPosition(double x, double y, double z);

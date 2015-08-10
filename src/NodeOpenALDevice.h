@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <node.h>
+#include <node_object_wrap.h>
+#include <nan.h>
 #include <v8.h>
 
 #ifdef __APPLE__
@@ -14,11 +16,11 @@
 	#include <AL/alc.h>
 #endif
 
-using namespace v8;
 using namespace std;
+using namespace node;
+using namespace v8;
 
-
-class NodeOpenALDevice : public node::ObjectWrap {
+class NodeOpenALDevice : public ObjectWrap {
 	public:
 		static void Init(Handle<Object> exports);
 		ALCdevice* device;
@@ -29,5 +31,5 @@ class NodeOpenALDevice : public node::ObjectWrap {
 		NodeOpenALDevice();
 		~NodeOpenALDevice();
 
-		static v8::Handle<v8::Value> New(const v8::Arguments& args);
+		static NAN_METHOD(New);
 };

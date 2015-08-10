@@ -1,15 +1,18 @@
 #pragma once
 #include <node.h>
+#include <node_object_wrap.h>
+#include <nan.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
 
 using namespace v8;
 using namespace std;
+using namespace node;
 
-class NodeWavData : public node::ObjectWrap {
+class NodeWavData : public ObjectWrap {
 	public:
-		static void Init(v8::Handle<v8::Object> exports);
+		static void Init(Handle<Object> exports);
 		
 		char* data;
 		int channel;
@@ -21,5 +24,5 @@ class NodeWavData : public node::ObjectWrap {
 		NodeWavData(const char* path);
 		~NodeWavData();
 
-		static v8::Handle<v8::Value> New(const v8::Arguments& args);
+		static NAN_METHOD(New);
 };

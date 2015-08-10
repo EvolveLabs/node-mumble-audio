@@ -60,33 +60,30 @@ NodeWavData::~NodeWavData() {
 // ---------------------------------------------------
 void NodeWavData::Init(Handle<Object> exports) {
 	// Prepare constructor template
-	Local<FunctionTemplate> tpl = FunctionTemplate::New( New );
-	tpl->SetClassName( String::NewSymbol("WavData") );
+	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>( New );
+	tpl->SetClassName( NanNew<String>("WavData") );
 	tpl->InstanceTemplate()->SetInternalFieldCount( 1 );
 	
-	Persistent<Function> constructor = Persistent<Function>::New( tpl->GetFunction() );
-	
-	exports->Set(String::NewSymbol("WavData"), constructor);
+	exports->Set(NanNew<String>("WavData"), tpl->GetFunction());
 }
 
 // ---------------------------------------------------
-Handle<Value> NodeWavData::New(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeWavData::New) {
+	NanScope();
 	if (args.Length() == 0 || !args[0]->IsString()) {
-		return ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be a string")));
+		NanThrowTypeError("Expected a path string argument.");
+		NanReturnUndefined();
 	}
 
-	char* path = *v8::String::AsciiValue(args[0]);
+	char* path = *NanAsciiString(args[0]);
 
 	ifstream my_file(path);
 	if(!my_file.good()) {
-		return ThrowException(v8::Exception::TypeError(v8::String::New("File not found")));
+		NanThrowError("File not found");
+		NanReturnUndefined();
 	}
-
 
 	NodeWavData* wav = new NodeWavData( path );
 	wav->Wrap( args.This() );
-	return args.This();
+	NanReturnValue(args.This());
 }
-
-

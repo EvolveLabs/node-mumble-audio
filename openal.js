@@ -1,3 +1,3 @@
-var bindings = require('bindings')('openal');
+var bindings = require('bindings')('openal-' + process.arch);
 
 module.exports = bindings;

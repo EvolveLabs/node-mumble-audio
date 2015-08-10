@@ -1,13 +1,14 @@
 #pragma once
 #define NUM_BUFFERS 10
 
-
+#include <node.h>
+#include <node_object_wrap.h>
+#include <nan.h>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
 
 #ifdef __APPLE__
 	#include <OpenAL/al.h>
@@ -17,17 +18,19 @@
 #if defined (_WIN32) || defined (_WIN64)
 	#include <AL/al.h>
 	#include <AL/alc.h>
+    #include <io.h>
+#else
+    #include <unistd.h>
 #endif
 
 using namespace v8;
 using namespace std;
-
-
+using namespace node;
 
 // http://kcat.strangesoft.net/openal-tutorial.html
-class NodeOpenALStream : public node::ObjectWrap {
+class NodeOpenALStream : public ObjectWrap {
     public:
-        static void Init(v8::Handle<v8::Object> exports);
+        static void Init(Handle<Object> exports);
 
         void buffer(size_t size, char* bufferdata);
         void setPosition(double x, double y, double z);
@@ -43,12 +46,12 @@ class NodeOpenALStream : public node::ObjectWrap {
 		int n;
     
     private:
-        static v8::Handle<v8::Value> New(const v8::Arguments& args);
-        static v8::Handle<v8::Value> Buffer(const v8::Arguments& args);
-        static v8::Handle<v8::Value> Ready(const v8::Arguments& args);
-        static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
-        static v8::Handle<v8::Value> GetPosition(const Arguments& args);
-        static v8::Handle<v8::Value> SetGain(const v8::Arguments& args);
+        static NAN_METHOD(New);
+        static NAN_METHOD(Buffer);
+        static NAN_METHOD(Ready);
+        static NAN_METHOD(SetPosition);
+        static NAN_METHOD(GetPosition);
+        static NAN_METHOD(SetGain);
 
 		NodeOpenALStream(int channels, int bps, int _frequency);
     	~NodeOpenALStream();

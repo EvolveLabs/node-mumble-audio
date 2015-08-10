@@ -1,7 +1,7 @@
-#include <node.h>
 #include "NodeOpenALContext.h"
 
 using namespace v8;
+using namespace node;
 
 //vector<NodeOpenALContext*> NodeOpenALContext::contexts;
 
@@ -24,34 +24,32 @@ NodeOpenALContext::~NodeOpenALContext() {
 
 void NodeOpenALContext::Init(Handle<Object> exports) {
 	// Prepare constructor template
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->SetClassName(String::NewSymbol("Context"));
+	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+	tpl->SetClassName(NanNew<String>("Context"));
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-	Persistent<Function> constructor = Persistent<Function>::New(tpl->GetFunction());
-	exports->Set(String::NewSymbol("Context"), constructor);
+	exports->Set(NanNew<String>("Context"), tpl->GetFunction());
 }
 
-Handle<Value> NodeOpenALContext::New(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALContext::New) {
+	NanScope();
 
-	if (args.Length() < 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-		return scope.Close( Undefined() );
+	if (args.Length() != 1) {
+		NanThrowTypeError("Expected a Device as an argument.");
+		NanReturnUndefined();
 	}
 
 	if ( !args[0]->IsObject() ) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close( Undefined() );
+		NanThrowTypeError("Expected a Device as an argument.");
+		NanReturnUndefined();
 	}
 
-	NodeOpenALDevice* dev = node::ObjectWrap::Unwrap<NodeOpenALDevice>(args[0]->ToObject());
+	NodeOpenALDevice* dev = ObjectWrap::Unwrap<NodeOpenALDevice>(args[0]->ToObject());
 	
 	NodeOpenALContext* ctx = new NodeOpenALContext( dev );
 	//contexts.push_back( ctx );
 
 	ctx->Wrap(args.This());
-
-	return args.This();
+	NanReturnValue(args.This());
 }
 

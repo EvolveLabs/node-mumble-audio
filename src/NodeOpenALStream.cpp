@@ -8,33 +8,32 @@ using namespace std;
 // --------------------------------------------------------
 void NodeOpenALStream::Init(Handle<Object> exports) {
 	// Prepare constructor template
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->SetClassName(String::NewSymbol("Stream"));
+	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+	tpl->SetClassName(NanNew<String>("Stream"));
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("Ready"), FunctionTemplate::New(Ready)->GetFunction());
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("Buffer"), FunctionTemplate::New(Buffer)->GetFunction());
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("SetPosition"), FunctionTemplate::New(SetPosition)->GetFunction());
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("GetPosition"), FunctionTemplate::New(GetPosition)->GetFunction());
-	tpl->PrototypeTemplate()->Set(String::NewSymbol("SetGain"), FunctionTemplate::New(SetGain)->GetFunction());
+	tpl->PrototypeTemplate()->Set(NanNew<String>("Ready"), NanNew<FunctionTemplate>(Ready)->GetFunction());
+	tpl->PrototypeTemplate()->Set(NanNew<String>("Buffer"), NanNew<FunctionTemplate>(Buffer)->GetFunction());
+	tpl->PrototypeTemplate()->Set(NanNew<String>("SetPosition"), NanNew<FunctionTemplate>(SetPosition)->GetFunction());
+	tpl->PrototypeTemplate()->Set(NanNew<String>("GetPosition"), NanNew<FunctionTemplate>(GetPosition)->GetFunction());
+	tpl->PrototypeTemplate()->Set(NanNew<String>("SetGain"), NanNew<FunctionTemplate>(SetGain)->GetFunction());
 
-	Persistent<Function> constructor = Persistent<Function>::New(tpl->GetFunction());
-	exports->Set(String::NewSymbol("Stream"), constructor);
+	exports->Set(NanNew<String>("Stream"), tpl->GetFunction());
 }
 
 
 // --------------------------------------------------------
-Handle<Value> NodeOpenALStream::New(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALStream::New) {
+	NanScope();
 
-	if (args.Length() < 3) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-		return scope.Close( Undefined() );
+	if (args.Length() != 3) {
+		NanThrowTypeError("Expected 3 number arguments.");
+		NanReturnUndefined();
 	}
 
 	if ( !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close( Undefined() );
+		NanThrowTypeError("Expected 3 number arguments.");
+		NanReturnUndefined();
 	}
 
 	double channels = args[0]->NumberValue();
@@ -42,50 +41,50 @@ Handle<Value> NodeOpenALStream::New(const Arguments& args) {
 	double frequency = args[2]->NumberValue();
 
 	NodeOpenALStream* stream = new NodeOpenALStream(channels, bps, frequency);
-	stream->Wrap( args.This() );
-	return args.This();
+	stream->Wrap(args.This());
+	NanReturnValue(args.This());
 }
 
 
 // --------------------------------------------------------
-Handle<Value> NodeOpenALStream::Buffer(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALStream::Buffer) {
+	NanScope();
 	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
 
-	if (args.Length() < 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-		return scope.Close( Undefined() );
+	if (args.Length() != 1) {
+		NanThrowTypeError("Expected a Buffer as an argument.");
+		NanReturnUndefined();
 	}
 
 	Local<Value> buffer = args[0];
-	size_t size = node::Buffer::Length( buffer->ToObject() );
-	char* bufferdata = node::Buffer::Data( buffer->ToObject() );
+	size_t size = Buffer::Length( buffer->ToObject() );
+	char* bufferdata = Buffer::Data( buffer->ToObject() );
 
 	obj->buffer(size, bufferdata);
-	return scope.Close(v8::Undefined());
+	NanReturnUndefined();
 }
 
 
 // --------------------------------------------------------
-Handle<Value> NodeOpenALStream::Ready(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALStream::Ready) {
+	NanScope();
 	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
-	return scope.Close(Boolean::New( obj->ready() ));
+	NanReturnValue(NanNew<Boolean>( obj->ready() ));
 }
 
 // --------------------------------------------------------
-Handle<Value> NodeOpenALStream::SetPosition(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALStream::SetPosition) {
+	NanScope();
 	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
 
-	if (args.Length() < 3) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-		return scope.Close( Undefined() );
+	if (args.Length() != 3) {
+		NanThrowTypeError("Expected 3 number arguments.");
+		NanReturnUndefined();
 	}
 
 	if ( !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close( Undefined() );
+		NanThrowTypeError("Expected 3 number arguments.");
+		NanReturnUndefined();
 	}
 
 	double x = args[0]->NumberValue();
@@ -93,12 +92,12 @@ Handle<Value> NodeOpenALStream::SetPosition(const Arguments& args) {
 	double z = args[2]->NumberValue();
 	obj->setPosition(x, y, z);
 
-	return scope.Close(v8::Undefined());
+	NanReturnUndefined();
 }
 
 // --------------------------------------------------------
-Handle<Value> NodeOpenALStream::GetPosition(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALStream::GetPosition) {
+	NanScope();
 	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
 	
 	ALfloat x;
@@ -106,39 +105,35 @@ Handle<Value> NodeOpenALStream::GetPosition(const Arguments& args) {
 	ALfloat z;
 	alGetSource3f(obj->sourceid, AL_POSITION, &x, &y, &z);
 
-	Local<Object> position = Object::New();
-	position->Set(String::NewSymbol("x"),  Number::New(x));
-	position->Set(String::NewSymbol("y"),  Number::New(y));
-	position->Set(String::NewSymbol("z"),  Number::New(z));
+	Local<Object> position = NanNew<Object>();
+	position->Set(NanNew<String>("x"), NanNew<Number>(x));
+	position->Set(NanNew<String>("y"), NanNew<Number>(y));
+	position->Set(NanNew<String>("z"), NanNew<Number>(z));
 
-	return scope.Close(position);
+	NanReturnValue(position);
 }
 
 
 // --------------------------------------------------------
-Handle<Value> NodeOpenALStream::SetGain(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(NodeOpenALStream::SetGain) {
+	NanScope();
 	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
 
-	if (args.Length() < 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-		return scope.Close( Undefined() );
+	if (args.Length() != 1) {
+		NanThrowTypeError("Expected a single number argument");
+		NanReturnUndefined();
 	}
 
 	if ( !args[0]->IsNumber() ) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments")));
-		return scope.Close( Undefined() );
+		NanThrowTypeError("Expected a single number argument");
+		NanReturnUndefined();
 	}
-
 
 	double x = args[0]->NumberValue();
 	obj->setGain(x);
 
-	return scope.Close(v8::Undefined());
+	NanReturnUndefined();
 }
-
-
-
 
 string ErrorCheck(ALenum error)
 {
@@ -164,8 +159,6 @@ string ErrorCheck(ALenum error)
     }
     return " Don't know ";
 }
-
-
 
 // -----------------------------------------------------
 NodeOpenALStream::NodeOpenALStream(int channels, int bps, int _frequency) {
