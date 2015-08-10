@@ -23,9 +23,12 @@ using namespace v8;
 class NodeOpenALDevice : public ObjectWrap {
 	public:
 		static void Init(Handle<Object> exports);
+
 		ALCdevice* device;
 
 		//static vector<NodeOpenALDevice*> devices;
+		
+		static NAN_METHOD(GetAll);
 
 	private:
 		NodeOpenALDevice();

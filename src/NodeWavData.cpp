@@ -75,15 +75,15 @@ NAN_METHOD(NodeWavData::New) {
 		NanReturnUndefined();
 	}
 
-	char* path = *NanAsciiString(args[0]);
+	NanAsciiString arg0(args[0]);
 
-	ifstream my_file(path);
+	ifstream my_file(*arg0);
 	if(!my_file.good()) {
 		NanThrowError("File not found");
 		NanReturnUndefined();
 	}
 
-	NodeWavData* wav = new NodeWavData( path );
+	NodeWavData* wav = new NodeWavData( *arg0 );
 	wav->Wrap( args.This() );
 	NanReturnValue(args.This());
 }
