@@ -1,10 +1,10 @@
-#include "Source.h"
+#include "ALSource.h"
 
 using namespace v8;
 using namespace node;
 
 // --------------------------------------------------------
-NodeOpenALSource::NodeOpenALSource(NodeWavData* data) {
+ALSource::ALSource(ALWavData* data) {
     
     if(data->channel==1) {
 		if(data->bps==8) {
@@ -28,13 +28,13 @@ NodeOpenALSource::NodeOpenALSource(NodeWavData* data) {
 };
 
 // --------------------------------------------------------
-NodeOpenALSource::~NodeOpenALSource() {
+ALSource::~ALSource() {
 	alDeleteSources(1, &sourceid);
 	alDeleteBuffers(1, &bufferid);
 };
 
 // --------------------------------------------------------
-void NodeOpenALSource::Init(Handle<Object> exports) {
+void ALSource::Init(Handle<Object> exports) {
   // Prepare constructor template
   Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
   tpl->SetClassName(NanNew<String>("Source"));
@@ -48,7 +48,7 @@ void NodeOpenALSource::Init(Handle<Object> exports) {
 }
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALSource::New) {
+NAN_METHOD(ALSource::New) {
 	NanScope();
 
 	if (!args.IsConstructCall()) {
@@ -66,24 +66,24 @@ NAN_METHOD(NodeOpenALSource::New) {
 		NanReturnUndefined();
 	}
 
-	NodeWavData* data = ObjectWrap::Unwrap<NodeWavData>(args[0]->ToObject());
-	NodeOpenALSource* source = new NodeOpenALSource(data);
+	ALWavData* data = ObjectWrap::Unwrap<ALWavData>(args[0]->ToObject());
+	ALSource* source = new ALSource(data);
 	source->Wrap(args.This());
 	NanReturnValue(args.This());
 }
 
 // --------------------------------------------------------
-void NodeOpenALSource::play() {
+void ALSource::play() {
 	alSourcePlay(sourceid);
 }
 
 // --------------------------------------------------------
-void NodeOpenALSource::setPosition(double x, double y, double z) {
-	alSource3f(sourceid, AL_POSITION, x, y, z);
+void ALSource::setPosition(double x, double y, double z) {
+	alSource3f(sourceid, AL_POSITION, (ALfloat)x, (ALfloat)y, (ALfloat)z);
 }
 
 // --------------------------------------------------------
-void NodeOpenALSource::setLoop(bool loop) {
+void ALSource::setLoop(bool loop) {
 	if(loop)
 		alSourcei(sourceid, AL_LOOPING, AL_TRUE);
 	else
@@ -91,9 +91,9 @@ void NodeOpenALSource::setLoop(bool loop) {
 }
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALSource::Play) {
+NAN_METHOD(ALSource::Play) {
 	NanScope();
-	NodeOpenALSource* obj = ObjectWrap::Unwrap<NodeOpenALSource>(args.This());
+	ALSource* obj = ObjectWrap::Unwrap<ALSource>(args.This());
 
 	obj->play();
 	
@@ -101,9 +101,9 @@ NAN_METHOD(NodeOpenALSource::Play) {
 }
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALSource::SetPosition) {
+NAN_METHOD(ALSource::SetPosition) {
 	NanScope();
-	NodeOpenALSource* obj = ObjectWrap::Unwrap<NodeOpenALSource>(args.This());
+	ALSource* obj = ObjectWrap::Unwrap<ALSource>(args.This());
 
 	double x = args[0]->NumberValue();
 	double y = args[1]->NumberValue();
@@ -114,9 +114,9 @@ NAN_METHOD(NodeOpenALSource::SetPosition) {
 }
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALSource::SetLoop) {
+NAN_METHOD(ALSource::SetLoop) {
 	NanScope();
-	NodeOpenALSource* obj = ObjectWrap::Unwrap<NodeOpenALSource>(args.This());
+	ALSource* obj = ObjectWrap::Unwrap<ALSource>(args.This());
 
 	bool loop = args[0]->BooleanValue();
 	obj->setLoop( loop );

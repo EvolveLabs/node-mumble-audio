@@ -15,19 +15,19 @@
 	#include <AL/alc.h>
 #endif
 
-#include "WavData.h"
+#include "ALWavData.h"
 
 using namespace v8;
 using namespace node;
 using namespace std;
 
-class NodeOpenALSource : public ObjectWrap {
+class ALSource : public ObjectWrap {
 	public:
 		static void Init(Handle<Object> exports);
 
 	private:
-		NodeOpenALSource( NodeWavData* data );
-		~NodeOpenALSource();
+		ALSource( ALWavData* data );
+		~ALSource();
 
 		static NAN_METHOD(New);
 		static NAN_METHOD(Play);

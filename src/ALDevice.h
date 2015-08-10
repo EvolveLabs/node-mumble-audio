@@ -20,19 +20,18 @@ using namespace std;
 using namespace node;
 using namespace v8;
 
-class NodeOpenALDevice : public ObjectWrap {
+class ALDevice : public ObjectWrap {
 	public:
+		ALDevice::ALDevice(ALCdevice* device);
+		~ALDevice();
+
 		static void Init(Handle<Object> exports);
-
-		ALCdevice* device;
-
-		//static vector<NodeOpenALDevice*> devices;
 		
 		static NAN_METHOD(GetAll);
-
-	private:
-		NodeOpenALDevice();
-		~NodeOpenALDevice();
-
 		static NAN_METHOD(New);
+		
+		ALCdevice* getAlcDevice();
+
+	private:		
+		ALCdevice* device;
 };

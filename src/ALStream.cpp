@@ -1,12 +1,13 @@
-#include <node.h>
+
+#include "ALStream.h"
 #include <node_buffer.h>
-#include "Stream.h"
 
 using namespace v8;
+using namespace node;
 using namespace std;
 
 // --------------------------------------------------------
-void NodeOpenALStream::Init(Handle<Object> exports) {
+void ALStream::Init(Handle<Object> exports) {
 	// Prepare constructor template
 	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 	tpl->SetClassName(NanNew<String>("Stream"));
@@ -23,7 +24,7 @@ void NodeOpenALStream::Init(Handle<Object> exports) {
 
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALStream::New) {
+NAN_METHOD(ALStream::New) {
 	NanScope();
 
 	if (args.Length() != 3) {
@@ -36,46 +37,46 @@ NAN_METHOD(NodeOpenALStream::New) {
 		NanReturnUndefined();
 	}
 
-	double channels = args[0]->NumberValue();
-	double bps = args[1]->NumberValue();
-	double frequency = args[2]->NumberValue();
+	int32_t channels = args[0]->Int32Value();
+	int32_t bps = args[1]->Int32Value();
+	int32_t frequency = args[2]->Int32Value();
 
-	NodeOpenALStream* stream = new NodeOpenALStream(channels, bps, frequency);
+	ALStream* stream = new ALStream(channels, bps, frequency);
 	stream->Wrap(args.This());
 	NanReturnValue(args.This());
 }
 
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALStream::Buffer) {
+NAN_METHOD(ALStream::Buffer) {
 	NanScope();
-	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
+	ALStream* obj = ObjectWrap::Unwrap<ALStream>(args.This());
 
 	if (args.Length() != 1) {
 		NanThrowTypeError("Expected a Buffer as an argument.");
 		NanReturnUndefined();
 	}
 
-	Local<Value> buffer = args[0];
-	size_t size = Buffer::Length( buffer->ToObject() );
-	char* bufferdata = Buffer::Data( buffer->ToObject() );
+	Local<Object> buffer = args[0]->ToObject();
+	size_t size = Buffer::Length( buffer );
+	char* bufferdata = Buffer::Data( buffer );
 
-	obj->buffer(size, bufferdata);
+	obj->buffer((int)size, bufferdata);
 	NanReturnUndefined();
 }
 
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALStream::Ready) {
+NAN_METHOD(ALStream::Ready) {
 	NanScope();
-	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
+	ALStream* obj = ObjectWrap::Unwrap<ALStream>(args.This());
 	NanReturnValue(NanNew<Boolean>( obj->ready() ));
 }
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALStream::SetPosition) {
+NAN_METHOD(ALStream::SetPosition) {
 	NanScope();
-	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
+	ALStream* obj = ObjectWrap::Unwrap<ALStream>(args.This());
 
 	if (args.Length() != 3) {
 		NanThrowTypeError("Expected 3 number arguments.");
@@ -96,9 +97,9 @@ NAN_METHOD(NodeOpenALStream::SetPosition) {
 }
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALStream::GetPosition) {
+NAN_METHOD(ALStream::GetPosition) {
 	NanScope();
-	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
+	ALStream* obj = ObjectWrap::Unwrap<ALStream>(args.This());
 	
 	ALfloat x;
 	ALfloat y;
@@ -115,9 +116,9 @@ NAN_METHOD(NodeOpenALStream::GetPosition) {
 
 
 // --------------------------------------------------------
-NAN_METHOD(NodeOpenALStream::SetGain) {
+NAN_METHOD(ALStream::SetGain) {
 	NanScope();
-	NodeOpenALStream* obj = ObjectWrap::Unwrap<NodeOpenALStream>(args.This());
+	ALStream* obj = ObjectWrap::Unwrap<ALStream>(args.This());
 
 	if (args.Length() != 1) {
 		NanThrowTypeError("Expected a single number argument");
@@ -161,7 +162,7 @@ string ErrorCheck(ALenum error)
 }
 
 // -----------------------------------------------------
-NodeOpenALStream::NodeOpenALStream(int channels, int bps, int _frequency) {
+ALStream::ALStream(int channels, int bps, int _frequency) {
     if(channels==1) {
 		if(bps==8) {
 			format=AL_FORMAT_MONO8;
@@ -203,7 +204,7 @@ NodeOpenALStream::NodeOpenALStream(int channels, int bps, int _frequency) {
 }
 
 // -----------------------------------------------------
-NodeOpenALStream::~NodeOpenALStream() {
+ALStream::~ALStream() {
 	ALint val;
 	/* Although mplayer is done giving us data, OpenAL may still be
 	 * playing the remaining buffers. Wait until it stops. */
@@ -217,7 +218,7 @@ NodeOpenALStream::~NodeOpenALStream() {
 }
 
 // -----------------------------------------------------
-void NodeOpenALStream::buffer(size_t size, char* data) {
+void ALStream::buffer(int size, char* data) {
 	
 	//cout << "received " << size << " bytes" << endl;
 	ALenum error;
@@ -266,7 +267,7 @@ void NodeOpenALStream::buffer(size_t size, char* data) {
 }
 
 // -----------------------------------------------------
-bool NodeOpenALStream::ready() {
+bool ALStream::ready() {
 	if(n < NUM_BUFFERS-1) return true;
 	ALint val;
 	alGetSourcei(sourceid, AL_BUFFERS_PROCESSED, &val);
@@ -274,13 +275,13 @@ bool NodeOpenALStream::ready() {
 }
 
 // -----------------------------------------------------
-void NodeOpenALStream::setGain(float g) {
-	alSourcef(sourceid, AL_GAIN, g);
+void ALStream::setGain(double g) {
+	alSourcef(sourceid, AL_GAIN, (float)g);
 }
 
 // --------------------------------------------------------
-void NodeOpenALStream::setPosition(double x, double y, double z) {
+void ALStream::setPosition(double x, double y, double z) {
 	cout << "SETTING: x=" << x << " y=" << y << " z=" << z << endl;
-	alSource3f(sourceid, AL_POSITION, x, y, z);
+	alSource3f(sourceid, AL_POSITION, (float)x, (float)y, (float)z);
 }
 

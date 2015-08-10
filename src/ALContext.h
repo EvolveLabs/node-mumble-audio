@@ -15,22 +15,26 @@
 	#include <AL/alc.h>
 #endif
 
-#include "Device.h"
+#include "ALDevice.h"
 
 using namespace v8;
 using namespace node;
 using namespace std;
 
-class NodeOpenALContext : public ObjectWrap {
+class ALContext : public ObjectWrap {
 	public:
-		static void Init(Handle<Object> exports);
-		ALCcontext* context;
-		//static vector<NodeOpenALContext*> contexts;
+		static void Init(Handle<Object> exports);		
 
 	private:
-		NodeOpenALContext(NodeOpenALDevice* dev);
-		~NodeOpenALContext();
+		ALContext();
+		~ALContext();
 
 		static NAN_METHOD(New);
-		static NAN_METHOD(PlusOne);
+		static NAN_METHOD(SetDevice);
+		static NAN_METHOD(SetSource);
+		static NAN_METHOD(Play);
+
+	private:
+		ALCcontext* context;
+		ALDevice* device;
 };

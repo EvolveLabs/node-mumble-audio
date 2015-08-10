@@ -1,30 +1,39 @@
-#include "Device.h"
+#include "ALDevice.h"
 #include <vector>
 
 using namespace std;
 using namespace v8;
 
-//vector<NodeOpenALDevice*> NodeOpenALDevice::devices;
+//vector<ALDevice*> ALDevice::devices;
 
 // ------------------------------------------
-NodeOpenALDevice::NodeOpenALDevice() {
-	device = alcOpenDevice(NULL);
-    if(device==NULL) {
-		std::cout << "cannot open sound card" << std::endl;
-		return;
-    }
+// ALDevice::ALDevice() {
+// 	device = alcOpenDevice(NULL);
+//     if(device==NULL) {
+// 		std::cout << "cannot open sound card" << std::endl;
+// 		return;
+//     }
+// };
+
+ALDevice::ALDevice(ALCdevice* device) {
+	this->device = device;
 };
 
 // ------------------------------------------
-NodeOpenALDevice::~NodeOpenALDevice() {
+ALDevice::~ALDevice() {
 	if(device) {
 		cout << "destroying device" << endl;
 		alcCloseDevice(device);
 	}
 };
 
+
+ALCdevice* ALDevice::getAlcDevice() {
+	return this->device;
+}
+
 // ------------------------------------------
-void NodeOpenALDevice::Init(Handle<Object> exports) {
+void ALDevice::Init(Handle<Object> exports) {
 	// Prepare constructor template
 	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 	tpl->SetClassName(NanNew<String>("Device"));
@@ -37,16 +46,17 @@ void NodeOpenALDevice::Init(Handle<Object> exports) {
 }
 
 // ------------------------------------------
-NAN_METHOD(NodeOpenALDevice::New) {
+NAN_METHOD(ALDevice::New) {
 	NanScope();
 
-	NodeOpenALDevice* obj = new NodeOpenALDevice();
-	//devices.push_back( obj );
-	obj->Wrap( args.This() );
-	NanReturnValue(args.This());
+	// ALDevice* obj = new ALDevice();
+	// obj->Wrap( args.This() );
+	// NanReturnValue(args.This());
+	// todo...
+	NanReturnUndefined();
 }
 
-NAN_METHOD(NodeOpenALDevice::GetAll) {
+NAN_METHOD(ALDevice::GetAll) {
 	NanScope();
 
 	if(!alcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" )) {

@@ -10,7 +10,7 @@ using namespace v8;
 using namespace std;
 using namespace node;
 
-class NodeWavData : public ObjectWrap {
+class ALWavData : public ObjectWrap {
 	public:
 		static void Init(Handle<Object> exports);
 		
@@ -21,8 +21,8 @@ class NodeWavData : public ObjectWrap {
 		int size;
 
 	private:
-		NodeWavData(const char* path);
-		~NodeWavData();
+		ALWavData(const char* path);
+		~ALWavData();
 
 		static NAN_METHOD(New);
 };

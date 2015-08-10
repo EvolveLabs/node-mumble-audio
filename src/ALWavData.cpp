@@ -1,5 +1,5 @@
 #include <node.h>
-#include "WavData.h"
+#include "ALWavData.h"
 
 bool isBigEndian() {
 	int a=1;
@@ -48,17 +48,17 @@ char* loadWAV(const char* fn, int& chan, int& samplerate, int& bps, int& size)
 }
 
 // ---------------------------------------------------
-NodeWavData::NodeWavData(const char* path) {
+ALWavData::ALWavData(const char* path) {
 	data = loadWAV(path, channel, samplerate, bps, size);
 };
 
 // ---------------------------------------------------
-NodeWavData::~NodeWavData() {
+ALWavData::~ALWavData() {
 	delete[] data;
 };
 
 // ---------------------------------------------------
-void NodeWavData::Init(Handle<Object> exports) {
+void ALWavData::Init(Handle<Object> exports) {
 	// Prepare constructor template
 	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>( New );
 	tpl->SetClassName( NanNew<String>("WavData") );
@@ -68,7 +68,7 @@ void NodeWavData::Init(Handle<Object> exports) {
 }
 
 // ---------------------------------------------------
-NAN_METHOD(NodeWavData::New) {
+NAN_METHOD(ALWavData::New) {
 	NanScope();
 	if (args.Length() == 0 || !args[0]->IsString()) {
 		NanThrowTypeError("Expected a path string argument.");
@@ -83,7 +83,7 @@ NAN_METHOD(NodeWavData::New) {
 		NanReturnUndefined();
 	}
 
-	NodeWavData* wav = new NodeWavData( *arg0 );
+	ALWavData* wav = new ALWavData( *arg0 );
 	wav->Wrap( args.This() );
 	NanReturnValue(args.This());
 }

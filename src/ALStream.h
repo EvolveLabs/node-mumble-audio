@@ -28,15 +28,15 @@ using namespace std;
 using namespace node;
 
 // http://kcat.strangesoft.net/openal-tutorial.html
-class NodeOpenALStream : public ObjectWrap {
+class ALStream : public ObjectWrap {
     public:
         static void Init(Handle<Object> exports);
 
-        void buffer(size_t size, char* bufferdata);
+        void buffer(int size, char* bufferdata);
         void setPosition(double x, double y, double z);
         void play();
         bool ready();
-        void setGain(float g);
+        void setGain(double g);
 
 		/* These are what we'll use for OpenAL playback */
 		ALuint sourceid, buffers[NUM_BUFFERS];
@@ -53,6 +53,6 @@ class NodeOpenALStream : public ObjectWrap {
         static NAN_METHOD(GetPosition);
         static NAN_METHOD(SetGain);
 
-		NodeOpenALStream(int channels, int bps, int _frequency);
-    	~NodeOpenALStream();
+		ALStream(int channels, int bps, int _frequency);
+    	~ALStream();
 };
