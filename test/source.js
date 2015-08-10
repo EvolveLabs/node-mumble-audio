@@ -1,5 +1,6 @@
 
 var openal = require('../openal')
+var path = require('path')
 
 var device = new openal.Device();
 var context = new openal.Context( device );
@@ -7,7 +8,7 @@ var context = new openal.Context( device );
 openal.MakeContextCurrent( context );
 openal.SetListenerOrientation(1, 0, 0);
 
-var data = new openal.WavData(__dirname+"/../sounds/synth.wav");
+var data = new openal.WavData(path.join(__dirname, '..', 'sounds', 'synth.wav'));
 var synth = new openal.Source( data );
 
 var x=0, y=0, z=0;
