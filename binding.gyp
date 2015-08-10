@@ -3,9 +3,10 @@
     {
       'target_name': 'openal-<@(target_arch)',
       'sources': [ 
-        "src/openal.cc", 
+        "src/openal.cc",
         "src/ALWavData.cpp", 
-        "src/ALDevice.cpp", 
+        "src/ALDevice.cpp",
+        "src/ALCaptureDevice.cpp", 
         "src/ALContext.cpp", 
         "src/ALSource.cpp",
         "src/ALStream.cpp"
