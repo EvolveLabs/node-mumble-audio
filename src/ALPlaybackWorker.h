@@ -16,8 +16,9 @@ using namespace v8;
 using namespace node;
 using namespace std;
 
-#define CAPTURE_SAMPLE_RATE	48000
-#define CAPTURE_SIZE		2048
+#define PLAYBACK_SAMPLE_RATE	48000
+#define PLAYBACK_SIZE			2048
+#define PLAYBACK_NUM_BUF		16
 
 class ALPlaybackData {
 public:
@@ -31,20 +32,30 @@ public:
 		delete data;
 	}
 
-private:
+public:
 	char* data;
 	size_t size;
 };
 
 class ALPlaybackWorker : public NanAsyncWorker {
 public:
-	ALPlaybackWorker(NanCallback *callback, ALCdevice* device, uv_mutex_t* async_lock, queue<ALPlaybackData*>* buffers);
+	ALPlaybackWorker(NanCallback *callback, ALCdevice* device, uv_mutex_t* async_lock, queue<ALPlaybackData*>* dataQueue);
 	~ALPlaybackWorker();
 
 	void Execute ();
 
 private:
+	void RecoverBuffers();
+	void EnqueuePendingData();
+	void Play();
+
+private:
 	ALCdevice*				device;
+	ALCcontext* 			audioContext;
+	ALuint					playbackBuffers[PLAYBACK_NUM_BUF];
+	ALuint					playbackSource;
+
 	uv_mutex_t*				async_lock;
-	queue<ALPlaybackData*>*	buffers;
+	queue<ALPlaybackData*>*	dataQueue;
+	queue<ALuint>			bufferQueue;
 };

@@ -1,16 +1,86 @@
 #include "ALPlaybackWorker.h"
 #include "ALThreading.h"
 
-ALPlaybackWorker::ALPlaybackWorker(NanCallback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _buffers) 
+ALPlaybackWorker::ALPlaybackWorker(NanCallback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue) 
 : NanAsyncWorker(callback),
 	device(_device),
 	async_lock(_async_lock),
-	buffers(_buffers)
-{
+	dataQueue(_dataQueue)
+{ 
+	audioContext = alcCreateContext(device, NULL);
+
+	alcMakeContextCurrent(audioContext);
+
+	alGenBuffers(PLAYBACK_NUM_BUF, playbackBuffers);
+
+	alGenSources(1, &playbackSource);
+
+	for(int i = 0; i < PLAYBACK_NUM_BUF; i++) {
+		bufferQueue.push(playbackBuffers[i]);
+	}
 }
   
 ALPlaybackWorker::~ALPlaybackWorker() 
 {
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(audioContext);
+}
+
+void ALPlaybackWorker::RecoverBuffers() 
+{
+	ALint 	availableBuffers;
+	ALuint	unqueuedBuffers[PLAYBACK_NUM_BUF];
+
+	alGetSourcei(playbackSource, AL_BUFFERS_PROCESSED, &availableBuffers);
+	if(availableBuffers > 0) 
+	{
+		alSourceUnqueueBuffers(playbackSource, availableBuffers, unqueuedBuffers);
+
+		for(int i = 0; i < availableBuffers; i++) {
+			bufferQueue.push(unqueuedBuffers[i]);
+		}
+	}
+}
+
+void ALPlaybackWorker::EnqueuePendingData() 
+{
+	ALPlaybackData* data = NULL;
+
+	uv_mutex_lock(async_lock);
+	if (!dataQueue->empty())
+	{
+		data = dataQueue->front();
+		dataQueue->pop();
+	}
+	uv_mutex_unlock(async_lock);
+
+	if (data != NULL) 
+	{
+		if(bufferQueue.empty())
+		{
+			cout << "dropping data..." << endl;
+		}
+		else
+		{
+			auto b = bufferQueue.front(); 
+			bufferQueue.pop();
+
+			alBufferData(b, AL_FORMAT_MONO16, data->data, data->size, PLAYBACK_SAMPLE_RATE);
+
+			alSourceQueueBuffers(playbackSource, 1, &b);
+		}
+
+		delete data;
+	}
+}
+
+void ALPlaybackWorker::Play()
+{
+	ALint state = 0;
+	alGetSourcei(playbackSource, AL_SOURCE_STATE, &state);
+	if(state != AL_PLAYING) {
+		alSourcePlay(playbackSource);
+	}
 }
 
 // Executed inside the worker-thread.
@@ -21,22 +91,9 @@ void ALPlaybackWorker::Execute()
 {
 	while(true)
 	{
-		ALPlaybackData* data = NULL;
-
-		uv_mutex_lock(async_lock);
-		if (!buffers->empty())
-		{
-			data = buffers->front();
-			buffers->pop();
-		}
-		uv_mutex_unlock(async_lock);
-
-		if (data != NULL) 
-		{
-			cout << "processing data..." << endl;
-			delete data;
-		}
-
+		RecoverBuffers();
+		EnqueuePendingData();
+		Play();
 		sleep(0);
 	}
 }
