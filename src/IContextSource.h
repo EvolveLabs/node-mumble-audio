@@ -1,10 +1,15 @@
 #pragma once
 
-class IContextSource {
+#include <node_object_wrap.h>
+
+using namespace node;
+
+class IContextSource : public ObjectWrap {
 	protected:
 		IContextSource() { }
 		~IContextSource() { }
 
 	public:
-		virtual unsigned int getAlcSourceId() { return 0; }
+		virtual unsigned int SourceId() { return 0; }
+		virtual void Start() { }
 };

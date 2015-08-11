@@ -16,6 +16,7 @@
 #endif
 
 #include "ALDevice.h"
+#include "IContextSource.h"
 
 using namespace v8;
 using namespace node;
@@ -37,4 +38,5 @@ class ALContext : public ObjectWrap {
 	private:
 		ALCcontext* context;
 		ALDevice* device;
+		IContextSource* source;
 };

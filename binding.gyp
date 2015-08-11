@@ -4,12 +4,8 @@
       'target_name': 'openal-<@(target_arch)',
       'sources': [ 
         "src/openal.cc",
-        "src/ALWavData.cpp", 
-        "src/ALDevice.cpp",
         "src/ALCaptureDevice.cpp", 
-        "src/ALContext.cpp", 
-        "src/ALSource.cpp",
-        "src/ALStream.cpp"
+        "src/ALCaptureWorker.cpp"
       ],
       'include_dirs': [
         "deps/includes",
@@ -80,9 +76,9 @@
                     '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll'
                 ],
                 'outputs': [
-                    '<@(PRODUCT_DIR)/soft_oal.dll'
+                    '<@(PRODUCT_DIR)/openal32.dll'
                 ],
-                'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll', '<@(PRODUCT_DIR)/soft_oal.dll']
+                'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll', '<@(PRODUCT_DIR)/openal32.dll']
               }
             ]
           }

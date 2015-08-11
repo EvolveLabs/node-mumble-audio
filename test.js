@@ -1,15 +1,16 @@
 var openal = require('./openal');
+var util = require('util');
 
-var context = new openal.Context();
+//var context = new openal.Context();
+//var mumble = ...;
+//mumble.on('voice', function (data) {
+//	context.play(data);	
+//})
 
-// Get default devices
-//var device = new openal.OutputDevice();
-//var source = new openal.CaptureDevice();
+var source = new openal.CaptureDevice();
+source.on('data', function (data) {
+	//mumble.out_stream.write(data);
+	console.log(util.inspect(data));
 
-// Optionally capture wav data from a file instead
-//var data = new openal.WavData(path.join(__dirname, '..', 'sounds', 'synth.wav'));
-//var source = new openal.Source( data );
-
-//context.setDevice( device );
-//context.setSource( captureDevice );
-context.play();
+})
+source.start();

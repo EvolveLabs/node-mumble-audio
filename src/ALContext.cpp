@@ -47,8 +47,17 @@ NAN_METHOD(ALContext::SetDevice) {
 };
 
 NAN_METHOD(ALContext::SetSource) {
-	NanScope();
-	//todo...
+	NanScope();	
+
+	if (args.Length() != 1 || !args[0]->IsObject()) {
+		NanThrowTypeError("Expected a source as an argument.");
+		NanReturnUndefined();
+	}
+
+	ALContext* context = ObjectWrap::Unwrap<ALContext>(args.This());
+	IContextSource* source = ObjectWrap::Unwrap<IContextSource>(args[0]->ToObject());
+	context->source = source;
+
 	NanReturnUndefined();
 }
 
@@ -56,7 +65,10 @@ NAN_METHOD(ALContext::Play) {
 	NanScope();
 	cout << "playing!" << endl;
 	//todo...
-	// alcMakeContextCurrent(this->context);
+
+	ALContext* context = ObjectWrap::Unwrap<ALContext>(args.This());
+	context->source->Start();
+	alcMakeContextCurrent(context->context);
 
 	NanReturnUndefined();
 }
