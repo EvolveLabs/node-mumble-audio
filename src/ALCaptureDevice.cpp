@@ -32,7 +32,7 @@ NAN_METHOD(ALCaptureDevice::New) {
 	auto captureDeviceName = alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
 
 	// Open capture device
-	auto device = alcCaptureOpenDevice(captureDeviceName, CAPTURE_SAMPLE_RATE, AL_FORMAT_MONO16, CAPTURE_SAMPLE_RATE * 2);
+	auto device = alcCaptureOpenDevice(captureDeviceName, CAPTURE_SAMPLE_RATE, AL_FORMAT_MONO16, CAPTURE_SAMPLE_RATE / 2);
 
 	ALCaptureDevice* obj = new ALCaptureDevice(device);
 	obj->Wrap(args.This());
@@ -43,7 +43,7 @@ NAN_METHOD(ALCaptureDevice::On) {
 	NanScope();
 
 	if (args.Length() != 2 || !args[0]->IsString() || !args[1]->IsFunction()) {
-		NanThrowTypeError("Invalid args, expected: string, function");
+		NanThrowTypeError("Invalid args, expected: (string, function)");
 		NanReturnUndefined();
 	}
 

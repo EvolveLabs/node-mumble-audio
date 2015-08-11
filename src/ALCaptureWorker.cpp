@@ -18,7 +18,6 @@ ALCaptureWorker::~ALCaptureWorker()
 // should go on `this`.
 void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 {
-	char			buffer[CAPTURE_SAMPLE_RATE * 2];
 	ALCint			samplesIn = 0;
 
 	alcCaptureStart(device);
@@ -29,21 +28,29 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 
 		if (samplesIn > CAPTURE_SIZE) {
 
-			alcCaptureSamples(device, buffer, CAPTURE_SIZE);
+			int sampleSize = CAPTURE_SIZE * sizeof(short);
 
-			progress.Send(buffer, sizeof(buffer));
+			char* captured = (char*)malloc(sampleSize);
+
+			alcCaptureSamples(device, captured, CAPTURE_SIZE);
+
+			progress.Send(captured, sampleSize);
 		}
 
 		sleep(0);
 	}
 }
 
-void ALCaptureWorker::HandleProgressCallback(const char *data, size_t size)
+void FreeBuffer(char* data, void* hint) {
+	free(data);
+}
+
+void ALCaptureWorker::HandleProgressCallback(const char* data, size_t size)
 {
 	NanScope();
 
 	Local<Value> args[] = {
-		NanNewBufferHandle(data, (uint32_t)size)
+		NanNewBufferHandle((char*)data, size, &FreeBuffer, NULL)
 	};
     callback->Call(1, args);
 }

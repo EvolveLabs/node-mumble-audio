@@ -11,9 +11,9 @@ ALPlaybackWorker::ALPlaybackWorker(NanCallback *callback, ALCdevice* _device, uv
 
 	alcMakeContextCurrent(audioContext);
 
-	alGenBuffers(PLAYBACK_NUM_BUF, playbackBuffers);
+	alGenBuffers(PLAYBACK_NUM_BUF, &playbackBuffers[0]);
 
-	alGenSources(1, &playbackSource);
+	alGenSources(1, &playbackSources[0]);
 
 	for(int i = 0; i < PLAYBACK_NUM_BUF; i++) {
 		bufferQueue.push(playbackBuffers[i]);
@@ -31,14 +31,17 @@ void ALPlaybackWorker::RecoverBuffers()
 	ALint 	availableBuffers;
 	ALuint	unqueuedBuffers[PLAYBACK_NUM_BUF];
 
-	alGetSourcei(playbackSource, AL_BUFFERS_PROCESSED, &availableBuffers);
+	alGetSourcei(playbackSources[0], AL_BUFFERS_PROCESSED, &availableBuffers);
 	if(availableBuffers > 0) 
 	{
-		alSourceUnqueueBuffers(playbackSource, availableBuffers, unqueuedBuffers);
+		alSourceUnqueueBuffers(playbackSources[0], availableBuffers, unqueuedBuffers);
 
-		for(int i = 0; i < availableBuffers; i++) {
+		for(int i = 0; i < availableBuffers; i++) 
+		{
 			bufferQueue.push(unqueuedBuffers[i]);
 		}
+
+		if(availableBuffers > 1) cout << "freeing " << availableBuffers << " buffers" << endl;
 	}
 }
 
@@ -56,7 +59,7 @@ void ALPlaybackWorker::EnqueuePendingData()
 
 	if (data != NULL) 
 	{
-		if(bufferQueue.empty())
+		if (bufferQueue.empty())
 		{
 			cout << "dropping data..." << endl;
 		}
@@ -67,19 +70,19 @@ void ALPlaybackWorker::EnqueuePendingData()
 
 			alBufferData(b, AL_FORMAT_MONO16, data->data, data->size, PLAYBACK_SAMPLE_RATE);
 
-			alSourceQueueBuffers(playbackSource, 1, &b);
+			alSourceQueueBuffers(playbackSources[0], 1, &b);
 		}
 
-		delete data;
+		//delete data;
 	}
 }
 
 void ALPlaybackWorker::Play()
 {
 	ALint state = 0;
-	alGetSourcei(playbackSource, AL_SOURCE_STATE, &state);
+	alGetSourcei(playbackSources[0], AL_SOURCE_STATE, &state);
 	if(state != AL_PLAYING) {
-		alSourcePlay(playbackSource);
+		alSourcePlay(playbackSources[0]);
 	}
 }
 

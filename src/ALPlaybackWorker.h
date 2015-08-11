@@ -29,7 +29,7 @@ public:
 	}
 
 	~ALPlaybackData() {
-		delete data;
+		free(data);
 	}
 
 public:
@@ -53,7 +53,7 @@ private:
 	ALCdevice*				device;
 	ALCcontext* 			audioContext;
 	ALuint					playbackBuffers[PLAYBACK_NUM_BUF];
-	ALuint					playbackSource;
+	ALuint					playbackSources[1];
 
 	uv_mutex_t*				async_lock;
 	queue<ALPlaybackData*>*	dataQueue;
