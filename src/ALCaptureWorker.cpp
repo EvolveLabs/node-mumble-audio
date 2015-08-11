@@ -9,6 +9,7 @@ ALCaptureWorker::ALCaptureWorker(NanCallback *callback, ALCdevice* _device)
   
 ALCaptureWorker::~ALCaptureWorker() 
 {
+	alcCaptureStop(device);
 }
 
 // Executed inside the worker-thread.
@@ -25,7 +26,7 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 	while(true) {
 
 		alcGetIntegerv(device, ALC_CAPTURE_SAMPLES, 1, &samplesIn);
-		
+
 		if (samplesIn > CAPTURE_SIZE) {
 
 			alcCaptureSamples(device, buffer, CAPTURE_SIZE);

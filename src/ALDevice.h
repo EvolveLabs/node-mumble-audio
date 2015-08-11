@@ -1,20 +1,16 @@
 #pragma once
-#include <iostream>
-#include <vector>
 #include <node.h>
 #include <node_object_wrap.h>
 #include <nan.h>
 #include <v8.h>
+#include <iostream>
+#include <vector>
+#include <queue>
 
-#ifdef __APPLE__
-	#include <OpenAL/al.h>
-	#include <OpenAL/alc.h>
-#endif
+#include <AL/al.h>
+#include <AL/alc.h>
 
-#if defined (_WIN32) || defined (_WIN64)
-	#include <AL/al.h>
-	#include <AL/alc.h>
-#endif
+#include "ALPlaybackWorker.h"
 
 using namespace std;
 using namespace node;
@@ -29,9 +25,12 @@ class ALDevice : public ObjectWrap {
 		
 		static NAN_METHOD(GetAll);
 		static NAN_METHOD(New);
-		
-		ALCdevice* getAlcDevice();
+
+		static NAN_METHOD(Play);
+		static NAN_METHOD(Write);
 
 	private:		
-		ALCdevice* device;
+		ALCdevice* 				device;
+		uv_mutex_t	 			async_lock;
+		queue<ALPlaybackData*> 	buffers;
 };

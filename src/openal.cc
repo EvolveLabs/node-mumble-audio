@@ -4,6 +4,7 @@
 #include <delay_load_hook.h>
 
 #include "ALCaptureDevice.h"
+#include "ALDevice.h"
 
 using namespace v8;
 using namespace std;
@@ -11,6 +12,7 @@ using namespace std;
 // --------------------------------------------------
 void NodeInit(Handle<Object> exports) {
 	ALCaptureDevice::Init(exports);
+	ALDevice::Init(exports);
 }
 
 /**

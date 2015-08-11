@@ -5,7 +5,9 @@
       'sources': [ 
         "src/openal.cc",
         "src/ALCaptureDevice.cpp", 
-        "src/ALCaptureWorker.cpp"
+        "src/ALCaptureWorker.cpp",
+        "src/ALDevice.cpp",
+        "src/ALPlaybackWorker.cpp"
       ],
       'include_dirs': [
         "deps/includes",

@@ -4,14 +4,13 @@
 using namespace std;
 using namespace v8;
 
-ALCaptureDevice::ALCaptureDevice(ALCdevice* device) {
-	this->device = device;
+ALCaptureDevice::ALCaptureDevice(ALCdevice* _device) 
+	: device(_device)
+{
 }
 
 ALCaptureDevice::~ALCaptureDevice() {
-	if(this->device != NULL) {
-		alcCloseDevice(this->device);
-	}
+	alcCaptureCloseDevice(device);
 }
 
 void ALCaptureDevice::Init(Handle<Object> exports) {
@@ -50,7 +49,9 @@ NAN_METHOD(ALCaptureDevice::On) {
 
 	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(args.This());
 
-	auto arg0 = args[0]->ToString();
+	auto arg0 = args[0].As<String>();
+	// todo: switch on arg0 value...
+
 	device->onData = new NanCallback(args[1].As<Function>());
 
 }

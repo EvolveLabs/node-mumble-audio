@@ -15,22 +15,17 @@ using namespace v8;
 //     }
 // };
 
-ALDevice::ALDevice(ALCdevice* device) {
-	this->device = device;
+ALDevice::ALDevice(ALCdevice* _device) : device(_device) {	
+    uv_mutex_init(&async_lock);
 };
 
 // ------------------------------------------
 ALDevice::~ALDevice() {
-	if(device) {
-		cout << "destroying device" << endl;
-		alcCloseDevice(device);
-	}
+
+    uv_mutex_destroy(&async_lock);
+
+	alcCloseDevice(device);
 };
-
-
-ALCdevice* ALDevice::getAlcDevice() {
-	return this->device;
-}
 
 // ------------------------------------------
 void ALDevice::Init(Handle<Object> exports) {
@@ -42,6 +37,9 @@ void ALDevice::Init(Handle<Object> exports) {
 	// Static functions on Device
 	tpl->Set(NanNew<String>("GetAll"), NanNew<FunctionTemplate>(GetAll)->GetFunction());
 
+	tpl->PrototypeTemplate()->Set(NanNew<String>("play"), NanNew<FunctionTemplate>(Play)->GetFunction());
+	tpl->PrototypeTemplate()->Set(NanNew<String>("write"), NanNew<FunctionTemplate>(Write)->GetFunction());
+
 	exports->Set(NanNew<String>("Device"), tpl->GetFunction());
 }
 
@@ -49,11 +47,10 @@ void ALDevice::Init(Handle<Object> exports) {
 NAN_METHOD(ALDevice::New) {
 	NanScope();
 
-	// ALDevice* obj = new ALDevice();
-	// obj->Wrap( args.This() );
-	// NanReturnValue(args.This());
-	// todo...
-	NanReturnUndefined();
+	ALCdevice* device = alcOpenDevice(NULL);
+	ALDevice* obj = new ALDevice(device);
+	obj->Wrap( args.This() );
+	NanReturnValue(args.This());
 }
 
 NAN_METHOD(ALDevice::GetAll) {
@@ -125,4 +122,28 @@ NAN_METHOD(ALDevice::GetAll) {
 	}
 
 	NanReturnValue(results);
+}
+
+NAN_METHOD(ALDevice::Play) {
+	NanScope();
+	auto device = ObjectWrap::Unwrap<ALDevice>(args.This());
+	NanAsyncQueueWorker(new ALPlaybackWorker(NULL, device->device, &device->async_lock, &device->buffers));
+	NanReturnUndefined();
+}
+
+NAN_METHOD(ALDevice::Write) {
+	NanScope();
+
+	auto device = ObjectWrap::Unwrap<ALDevice>(args.This());
+
+	Local<Object> val = args[0].As<Object>();
+	auto buffer = node::Buffer::Data(val);
+	auto len = node::Buffer::Length(val);
+	auto data = new ALPlaybackData(buffer, len);
+
+    uv_mutex_lock(&device->async_lock);
+    device->buffers.push(data);
+    uv_mutex_unlock(&device->async_lock);
+
+	NanReturnUndefined();
 }
