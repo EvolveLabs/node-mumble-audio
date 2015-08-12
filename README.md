@@ -17,3 +17,6 @@ $ elb configure
 ## Limitations:
 * Only supports PCM data.
 * Assumes a sample rate of 48k.
+
+## Other
+See [node-openal](https://github.com/jefftimesten/node-openal) for a starting point to a more general openal api.
