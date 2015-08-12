@@ -18,4 +18,4 @@ void NodeInit(Handle<Object> exports) {
 /**
 *	Initialize
 */
-NODE_MODULE(openal, NodeInit)
+NODE_MODULE(node_mumble_audio, NodeInit)

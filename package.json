@@ -1,10 +1,10 @@
 {
-  "name": "openal",
-  "version": "v0.1.0",
+  "name": "node-mumble-audio",
+  "version": "v0.0.1",
   "scripts": {
     "install": "bash ./node_modules/.bin/elinst"
   },
-  "main": "openal.js",
+  "main": "index.js",
   "description": "A capture and playback audio api for node-mumble",
   "author": {
     "name": "Justin Chase",

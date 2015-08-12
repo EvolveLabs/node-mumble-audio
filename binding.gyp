@@ -1,9 +1,9 @@
 {
   'targets': [
     {
-      'target_name': 'openal-<@(target_arch)',
+      'target_name': 'node-mumble-audio-<@(target_arch)',
       'sources': [ 
-        "src/openal.cc",
+        "src/init.cc",
         "src/ALCaptureDevice.cpp", 
         "src/ALCaptureWorker.cpp",
         "src/ALPlaybackDevice.cpp",
@@ -68,7 +68,7 @@
     {
       'target_name': 'openal_deploy',
       'type': 'none',
-      'dependencies': ['openal-<@(target_arch)'],
+      'dependencies': ['node-mumble-audio-<@(target_arch)'],
       'target_conditions': [
           [ 'OS=="win"', {
             'actions': [
