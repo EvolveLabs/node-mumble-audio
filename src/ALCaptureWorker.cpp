@@ -1,5 +1,4 @@
 #include "ALCaptureWorker.h"
-#include "ALThreading.h"
 
 ALCaptureWorker::ALCaptureWorker(NanCallback *callback, ALCdevice* _device) 
 : NanAsyncProgressWorker(callback),
@@ -41,16 +40,12 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 	}
 }
 
-void FreeBuffer(char* data, void* hint) {
-	free(data);
-}
-
 void ALCaptureWorker::HandleProgressCallback(const char* data, size_t size)
 {
 	NanScope();
 
 	Local<Value> args[] = {
-		NanNewBufferHandle((char*)data, size, &FreeBuffer, NULL)
+		NanNewBufferHandle((char*)data, (uint32_t)size)
 	};
     callback->Call(1, args);
 }

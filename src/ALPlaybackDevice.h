@@ -16,10 +16,10 @@ using namespace std;
 using namespace node;
 using namespace v8;
 
-class ALDevice : public ObjectWrap {
+class ALPlaybackDevice : public ObjectWrap {
 	public:
-		ALDevice::ALDevice(ALCdevice* device);
-		~ALDevice();
+		ALPlaybackDevice::ALPlaybackDevice(ALCdevice* device);
+		~ALPlaybackDevice();
 
 		static void Init(Handle<Object> exports);
 		

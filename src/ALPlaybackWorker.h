@@ -10,7 +10,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-#include "ALThreading.h"
+#include "Common.h"
 
 using namespace v8;
 using namespace node;

@@ -1,26 +1,12 @@
-#include "ALDevice.h"
+#include "ALPlaybackDevice.h"
 #include <vector>
 
-using namespace std;
-using namespace v8;
-
-//vector<ALDevice*> ALDevice::devices;
-
-// ------------------------------------------
-// ALDevice::ALDevice() {
-// 	device = alcOpenDevice(NULL);
-//     if(device==NULL) {
-// 		std::cout << "cannot open sound card" << std::endl;
-// 		return;
-//     }
-// };
-
-ALDevice::ALDevice(ALCdevice* _device) : device(_device) {	
+ALPlaybackDevice::ALPlaybackDevice(ALCdevice* _device) : device(_device) {	
     uv_mutex_init(&async_lock);
 };
 
 // ------------------------------------------
-ALDevice::~ALDevice() {
+ALPlaybackDevice::~ALPlaybackDevice() {
 
     uv_mutex_destroy(&async_lock);
 
@@ -28,7 +14,7 @@ ALDevice::~ALDevice() {
 };
 
 // ------------------------------------------
-void ALDevice::Init(Handle<Object> exports) {
+void ALPlaybackDevice::Init(Handle<Object> exports) {
 	// Prepare constructor template
 	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
 	tpl->SetClassName(NanNew<String>("Device"));
@@ -40,20 +26,20 @@ void ALDevice::Init(Handle<Object> exports) {
 	tpl->PrototypeTemplate()->Set(NanNew<String>("play"), NanNew<FunctionTemplate>(Play)->GetFunction());
 	tpl->PrototypeTemplate()->Set(NanNew<String>("write"), NanNew<FunctionTemplate>(Write)->GetFunction());
 
-	exports->Set(NanNew<String>("Device"), tpl->GetFunction());
+	exports->Set(NanNew<String>("PlaybackDevice"), tpl->GetFunction());
 }
 
 // ------------------------------------------
-NAN_METHOD(ALDevice::New) {
+NAN_METHOD(ALPlaybackDevice::New) {
 	NanScope();
 
 	ALCdevice* device = alcOpenDevice(NULL);
-	ALDevice* obj = new ALDevice(device);
+	ALPlaybackDevice* obj = new ALPlaybackDevice(device);
 	obj->Wrap( args.This() );
 	NanReturnValue(args.This());
 }
 
-NAN_METHOD(ALDevice::GetAll) {
+NAN_METHOD(ALPlaybackDevice::GetAll) {
 	NanScope();
 
 	if(!alcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" )) {
@@ -124,17 +110,17 @@ NAN_METHOD(ALDevice::GetAll) {
 	NanReturnValue(results);
 }
 
-NAN_METHOD(ALDevice::Play) {
+NAN_METHOD(ALPlaybackDevice::Play) {
 	NanScope();
-	auto device = ObjectWrap::Unwrap<ALDevice>(args.This());
+	auto device = ObjectWrap::Unwrap<ALPlaybackDevice>(args.This());
 	NanAsyncQueueWorker(new ALPlaybackWorker(NULL, device->device, &device->async_lock, &device->buffers));
 	NanReturnUndefined();
 }
 
-NAN_METHOD(ALDevice::Write) {
+NAN_METHOD(ALPlaybackDevice::Write) {
 	NanScope();
 
-	auto device = ObjectWrap::Unwrap<ALDevice>(args.This());
+	auto device = ObjectWrap::Unwrap<ALPlaybackDevice>(args.This());
 
 	Local<Object> val = args[0].As<Object>();
 	auto buffer = node::Buffer::Data(val);

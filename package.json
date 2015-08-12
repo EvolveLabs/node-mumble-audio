@@ -2,25 +2,25 @@
   "name": "openal",
   "version": "v0.1.0",
   "scripts": {
-    "test": "node test/stream-test.js"
+    "install": "bash ./node_modules/.bin/elinst"
   },
   "main": "openal.js",
-  "description": "OpenAL Interface",
+  "description": "A capture and playback audio api for node-mumble",
   "author": {
-    "name": "Jeff Crouse",
-    "email": "jefftimesten@gmail.com",
-    "url": "http://www.jeffcrouse.info"
+    "name": "Justin Chase",
+    "email": "justin@evolvelabs.com",
+    "url": "http://justinmchase.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jefftimesten/node-openal.git"
+    "url": "https://github.com/EvolveLabs/node-mumble-audio.git"
   },
   "contributors": [
-    "Justin Chase <justin@evolvelabs.com"
+    "Jeff Crouse <jefftimesten@gmail.com>"
   ],
-  "engines": {
-    "node": ">=0.8.0"
-  },
+  "binaries": [
+    "https://s3.amazonaws.com/evolve-bin/{name}/{name}-{version}-{platform}-{arch}-{configuration}.tgz"
+  ],
   "dependencies": {
     "bindings": "*",
     "electron-updater-tools": "^0.1.6"

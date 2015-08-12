@@ -8,6 +8,8 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
+#include "Common.h"
+
 using namespace v8;
 using namespace node;
 using namespace std;

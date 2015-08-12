@@ -1,5 +1,4 @@
 #include "ALPlaybackWorker.h"
-#include "ALThreading.h"
 
 ALPlaybackWorker::ALPlaybackWorker(NanCallback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue) 
 : NanAsyncWorker(callback),
@@ -68,7 +67,7 @@ void ALPlaybackWorker::EnqueuePendingData()
 			auto b = bufferQueue.front(); 
 			bufferQueue.pop();
 
-			alBufferData(b, AL_FORMAT_MONO16, data->data, data->size, PLAYBACK_SAMPLE_RATE);
+			alBufferData(b, AL_FORMAT_MONO16, data->data, (ALsizei)data->size, PLAYBACK_SAMPLE_RATE);
 
 			alSourceQueueBuffers(playbackSources[0], 1, &b);
 		}
