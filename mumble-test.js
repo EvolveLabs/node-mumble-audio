@@ -1,7 +1,7 @@
-var openal = require('./openal');
+var audio = require('./index');
 var mumble = require('electron-mumble');
-var speaker = new openal.Device();
-var source = new openal.CaptureDevice();
+var speaker = new audio.PlaybackDevice();
+var source = new audio.CaptureDevice();
 var out_stream = null;
 
 console.log( 'Connecting...' );
