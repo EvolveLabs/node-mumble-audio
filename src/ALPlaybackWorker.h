@@ -13,7 +13,7 @@
 #include "Common.h"
 
 using namespace v8;
-using namespace node;
+using namespace Nan;
 using namespace std;
 
 #define PLAYBACK_SAMPLE_RATE	48000
@@ -37,9 +37,9 @@ public:
 	size_t size;
 };
 
-class ALPlaybackWorker : public NanAsyncWorker {
+class ALPlaybackWorker : public AsyncWorker {
 public:
-	ALPlaybackWorker(NanCallback *callback, ALCdevice* device, uv_mutex_t* async_lock, queue<ALPlaybackData*>* dataQueue);
+	ALPlaybackWorker(Callback *callback, ALCdevice* device, uv_mutex_t* async_lock, queue<ALPlaybackData*>* dataQueue);
 	~ALPlaybackWorker();
 
 	void Execute ();

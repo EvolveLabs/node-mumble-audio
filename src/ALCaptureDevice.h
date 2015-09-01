@@ -1,8 +1,6 @@
 #pragma once
-#include <node.h>
-#include <node_object_wrap.h>
-#include <nan.h>
 #include <v8.h>
+#include <nan.h>
 #include <iostream>
 
 #include <AL/al.h>
@@ -11,7 +9,7 @@
 #include "AlCaptureWorker.h"
 
 using namespace std;
-using namespace node;
+using namespace Nan;
 using namespace v8;
 
 class ALCaptureDevice : public ObjectWrap
@@ -28,5 +26,5 @@ class ALCaptureDevice : public ObjectWrap
 
 	private:
 		ALCdevice*		device;
-		NanCallback*	onData;
+		Callback*		onData;
 };

@@ -1,8 +1,6 @@
 #pragma once
-#include <node.h>
-#include <node_object_wrap.h>
-#include <nan.h>
 #include <v8.h>
+#include <nan.h>
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -13,7 +11,7 @@
 #include "ALPlaybackWorker.h"
 
 using namespace std;
-using namespace node;
+using namespace Nan;
 using namespace v8;
 
 class ALPlaybackDevice : public ObjectWrap {

@@ -1,4 +1,3 @@
-#include <node.h>
 #include <nan.h>
 #include <v8.h>
 #include <delay_load_hook.h>

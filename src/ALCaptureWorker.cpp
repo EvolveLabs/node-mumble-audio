@@ -1,7 +1,7 @@
 #include "ALCaptureWorker.h"
 
-ALCaptureWorker::ALCaptureWorker(NanCallback *callback, ALCdevice* _device) 
-: NanAsyncProgressWorker(callback),
+ALCaptureWorker::ALCaptureWorker(Callback *callback, ALCdevice* _device) 
+: AsyncProgressWorker(callback),
 	device(_device)
 {
 }
@@ -42,10 +42,10 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 
 void ALCaptureWorker::HandleProgressCallback(const char* data, size_t size)
 {
-	NanScope();
+	Nan::HandleScope scope;
 
 	Local<Value> args[] = {
-		NanNewBufferHandle((char*)data, (uint32_t)size)
+		Nan::NewBuffer((char*)data, (uint32_t)size).ToLocalChecked()
 	};
     callback->Call(1, args);
 }

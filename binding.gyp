@@ -51,6 +51,7 @@
               '__WINDOWS_MM__'
             ],
             'libraries': [
+              "-lShlwapi.lib",
               "<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
             ],
             'msvs_settings': {

@@ -16,40 +16,35 @@ ALPlaybackDevice::~ALPlaybackDevice() {
 // ------------------------------------------
 void ALPlaybackDevice::Init(Handle<Object> exports) {
 	// Prepare constructor template
-	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
-	tpl->SetClassName(NanNew<String>("Device"));
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
+	tpl->SetClassName(Nan::New<String>("Device").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 	// Static functions on Device
-	tpl->Set(NanNew<String>("GetAll"), NanNew<FunctionTemplate>(GetAll)->GetFunction());
+	tpl->Set(Nan::New<String>("GetAll").ToLocalChecked(), Nan::New<FunctionTemplate>(GetAll)->GetFunction());
 
-	tpl->PrototypeTemplate()->Set(NanNew<String>("play"), NanNew<FunctionTemplate>(Play)->GetFunction());
-	tpl->PrototypeTemplate()->Set(NanNew<String>("write"), NanNew<FunctionTemplate>(Write)->GetFunction());
+	tpl->PrototypeTemplate()->Set(Nan::New<String>("play").ToLocalChecked(), Nan::New<FunctionTemplate>(Play)->GetFunction());
+	tpl->PrototypeTemplate()->Set(Nan::New<String>("write").ToLocalChecked(), Nan::New<FunctionTemplate>(Write)->GetFunction());
 
-	exports->Set(NanNew<String>("PlaybackDevice"), tpl->GetFunction());
+	exports->Set(Nan::New<String>("PlaybackDevice").ToLocalChecked(), tpl->GetFunction());
 }
 
 // ------------------------------------------
 NAN_METHOD(ALPlaybackDevice::New) {
-	NanScope();
-
 	ALCdevice* device = alcOpenDevice(NULL);
 	ALPlaybackDevice* obj = new ALPlaybackDevice(device);
-	obj->Wrap( args.This() );
-	NanReturnValue(args.This());
+	obj->Wrap( info.This() );
+	info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(ALPlaybackDevice::GetAll) {
-	NanScope();
 
 	if(!alcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" )) {
-		NanThrowError("Enumeration extension is not present.");
-		NanReturnUndefined();
+		return Nan::ThrowError("Enumeration extension is not present.");
 	}
 
 	if(!alcIsExtensionPresent( NULL, "ALC_ENUMERATE_ALL_EXT" )) {
-		NanThrowError("Enumeration extension is not present.");
-		NanReturnUndefined();
+		return Nan::ThrowError("Enumeration extension is not present.");
 	}
 
 	const ALchar* defaultDevice = alcGetString( NULL, ALC_DEFAULT_ALL_DEVICES_SPECIFIER );
@@ -74,17 +69,17 @@ NAN_METHOD(ALPlaybackDevice::GetAll) {
 	}
 
 	int deviceCount = (int)devices.size() + (int)captureDevices.size();
-	Local<Array> results = NanNew<Array>(deviceCount);
+	Local<Array> results = Nan::New<Array>(deviceCount);
 	for(int i = 0; i < devices.size(); i++) {
 		ALCdevice* device = devices.at(i);
-		Local<Object> obj = NanNew<Object>();
+		Local<Object> obj = Nan::New<Object>();
 
 		const ALchar* name = alcGetString( device, ALC_DEVICE_SPECIFIER );
 
-		obj->Set(NanNew<String>("name"), NanNew<String>(name));
-		obj->Set(NanNew<String>("kind"), NanNew<String>("output"));
+		obj->Set(Nan::New<String>("name").ToLocalChecked(), Nan::New<String>(name).ToLocalChecked());
+		obj->Set(Nan::New<String>("kind").ToLocalChecked(), Nan::New<String>("output").ToLocalChecked());
 		if(strcmp(name, defaultDevice) == 0) {
-			obj->Set(NanNew<String>("default"), NanNew<Boolean>(true));
+			obj->Set(Nan::New<String>("default").ToLocalChecked(), Nan::New<Boolean>(true));
 		}
 
 		results->Set(i, obj);
@@ -93,36 +88,33 @@ NAN_METHOD(ALPlaybackDevice::GetAll) {
 
 	for(int i = 0; i < captureDevices.size(); i++) {
 		ALCdevice* device = captureDevices.at(i);
-		Local<Object> obj = NanNew<Object>();
+		Local<Object> obj = Nan::New<Object>();
 
 		const ALchar* captureName = alcGetString( device, ALC_CAPTURE_DEVICE_SPECIFIER );
 		
-		obj->Set(NanNew<String>("name"), NanNew<String>(captureName));
-		obj->Set(NanNew<String>("kind"), NanNew<String>("capture"));
+		obj->Set(Nan::New<String>("name").ToLocalChecked(), Nan::New<String>(captureName).ToLocalChecked());
+		obj->Set(Nan::New<String>("kind").ToLocalChecked(), Nan::New<String>("capture").ToLocalChecked());
 		if(strcmp(captureName, defaultCaptureDevice) == 0) {
-			obj->Set(NanNew<String>("default"), NanNew<Boolean>(true));
+			obj->Set(Nan::New<String>("default").ToLocalChecked(), Nan::New<Boolean>(true));
 		}
 
 		results->Set((int)devices.size() + i, obj);
 		alcCloseDevice( device );
 	}
 
-	NanReturnValue(results);
+	info.GetReturnValue().Set(results);
 }
 
 NAN_METHOD(ALPlaybackDevice::Play) {
-	NanScope();
-	auto device = ObjectWrap::Unwrap<ALPlaybackDevice>(args.This());
-	NanAsyncQueueWorker(new ALPlaybackWorker(NULL, device->device, &device->async_lock, &device->buffers));
-	NanReturnUndefined();
+	auto device = ObjectWrap::Unwrap<ALPlaybackDevice>(info.This());
+	Nan::AsyncQueueWorker(new ALPlaybackWorker(NULL, device->device, &device->async_lock, &device->buffers));
 }
 
 NAN_METHOD(ALPlaybackDevice::Write) {
-	NanScope();
 
-	auto device = ObjectWrap::Unwrap<ALPlaybackDevice>(args.This());
+	auto device = ObjectWrap::Unwrap<ALPlaybackDevice>(info.This());
 
-	Local<Object> val = args[0].As<Object>();
+	Local<Object> val = info[0].As<Object>();
 	auto buffer = node::Buffer::Data(val);
 	auto len = node::Buffer::Length(val);
 	auto data = new ALPlaybackData(buffer, len);
@@ -130,6 +122,4 @@ NAN_METHOD(ALPlaybackDevice::Write) {
     uv_mutex_lock(&device->async_lock);
     device->buffers.push(data);
     uv_mutex_unlock(&device->async_lock);
-
-	NanReturnUndefined();
 }

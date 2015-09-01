@@ -1,7 +1,7 @@
 #include "ALPlaybackWorker.h"
 
-ALPlaybackWorker::ALPlaybackWorker(NanCallback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue) 
-: NanAsyncWorker(callback),
+ALPlaybackWorker::ALPlaybackWorker(Callback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue) 
+: 	AsyncWorker(callback),
 	device(_device),
 	async_lock(_async_lock),
 	dataQueue(_dataQueue)

@@ -15,18 +15,17 @@ ALCaptureDevice::~ALCaptureDevice() {
 
 void ALCaptureDevice::Init(Handle<Object> exports) {
 	// Prepare constructor template
-	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
-	tpl->SetClassName(NanNew<String>("CaptureDevice"));
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
+	tpl->SetClassName(Nan::New<String>("CaptureDevice").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-	tpl->PrototypeTemplate()->Set(NanNew<String>("on"), NanNew<FunctionTemplate>(On)->GetFunction());
-	tpl->PrototypeTemplate()->Set(NanNew<String>("start"), NanNew<FunctionTemplate>(Start)->GetFunction());
+	tpl->PrototypeTemplate()->Set(Nan::New<String>("on").ToLocalChecked(), Nan::New<FunctionTemplate>(On)->GetFunction());
+	tpl->PrototypeTemplate()->Set(Nan::New<String>("start").ToLocalChecked(), Nan::New<FunctionTemplate>(Start)->GetFunction());
 
-	exports->Set(NanNew<String>("CaptureDevice"), tpl->GetFunction());
+	exports->Set(Nan::New<String>("CaptureDevice").ToLocalChecked(), tpl->GetFunction());
 }
 
 NAN_METHOD(ALCaptureDevice::New) {
-	NanScope();
 
 	// Get Default audio device
 	auto captureDeviceName = alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
@@ -35,30 +34,26 @@ NAN_METHOD(ALCaptureDevice::New) {
 	auto device = alcCaptureOpenDevice(captureDeviceName, CAPTURE_SAMPLE_RATE, AL_FORMAT_MONO16, CAPTURE_SAMPLE_RATE / 2);
 
 	ALCaptureDevice* obj = new ALCaptureDevice(device);
-	obj->Wrap(args.This());
-	NanReturnValue(args.This());
+	obj->Wrap(info.This());
+	info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(ALCaptureDevice::On) {
-	NanScope();
 
-	if (args.Length() != 2 || !args[0]->IsString() || !args[1]->IsFunction()) {
-		NanThrowTypeError("Invalid args, expected: (string, function)");
-		NanReturnUndefined();
+	if (info.Length() != 2 || !info[0]->IsString() || !info[1]->IsFunction()) {
+		return Nan::ThrowTypeError("Invalid args, expected: (string, function)");
 	}
 
-	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(args.This());
+	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(info.This());
 
-	auto arg0 = args[0].As<String>();
+	auto arg0 = info[0].As<String>();
 	// todo: switch on arg0 value...
 
-	device->onData = new NanCallback(args[1].As<Function>());
+	device->onData = new Callback(info[1].As<Function>());
 
 }
 
 NAN_METHOD(ALCaptureDevice::Start) {
-	NanScope();
-	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(args.This());
-	NanAsyncQueueWorker(new ALCaptureWorker(device->onData, device->device));
-	NanReturnUndefined();
+	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(info.This());
+	Nan::AsyncQueueWorker(new ALCaptureWorker(device->onData, device->device));
 }

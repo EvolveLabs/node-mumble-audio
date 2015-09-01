@@ -1,8 +1,7 @@
 #pragma once
 
-#include <node.h>
-#include <nan.h>
 #include <v8.h>
+#include <nan.h>
 #include <iostream>
 
 #include <AL/al.h>
@@ -11,15 +10,15 @@
 #include "Common.h"
 
 using namespace v8;
-using namespace node;
+using namespace Nan;
 using namespace std;
 
 #define CAPTURE_SAMPLE_RATE	48000
 #define CAPTURE_SIZE		2048
 
-class ALCaptureWorker : public NanAsyncProgressWorker {
+class ALCaptureWorker : public AsyncProgressWorker {
 public:
-	ALCaptureWorker(NanCallback *callback, ALCdevice* device);
+	ALCaptureWorker(Callback *callback, ALCdevice* device);
 	~ALCaptureWorker();
 
 	void Execute (const ExecutionProgress& progress);
