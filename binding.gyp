@@ -55,10 +55,10 @@
               "<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
             ],
             'msvs_settings': {
-                'VCLinkerTool': {
-                    'DelayLoadDLLs': [ 'node.dll', 'iojs.exe', 'node.exe' ],
-                    'AdditionalOptions': [ '/ignore:4199' ],
-                },
+              'VCLinkerTool': {
+                'DelayLoadDLLs': [ 'node.dll', 'iojs.exe', 'node.exe' ],
+                'AdditionalOptions': [ '/ignore:4199' ],
+              },
             },
           }
         ]

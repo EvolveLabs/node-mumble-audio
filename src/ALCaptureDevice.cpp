@@ -1,8 +1,4 @@
 #include "ALCaptureDevice.h"
-#include <vector>
-
-using namespace std;
-using namespace v8;
 
 ALCaptureDevice::ALCaptureDevice(ALCdevice* _device) 
 	: device(_device)

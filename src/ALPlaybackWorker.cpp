@@ -72,7 +72,7 @@ void ALPlaybackWorker::EnqueuePendingData()
 			alSourceQueueBuffers(playbackSources[0], 1, &b);
 		}
 
-		//delete data;
+		delete data;
 	}
 }
 
@@ -96,6 +96,6 @@ void ALPlaybackWorker::Execute()
 		RecoverBuffers();
 		EnqueuePendingData();
 		Play();
-		sleep(0);
+		sleep(1);
 	}
 }

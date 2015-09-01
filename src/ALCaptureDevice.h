@@ -1,5 +1,6 @@
 #pragma once
 #include <v8.h>
+#include <node.h>
 #include <nan.h>
 #include <iostream>
 
@@ -8,9 +9,9 @@
 
 #include "AlCaptureWorker.h"
 
-using namespace std;
-using namespace Nan;
 using namespace v8;
+using namespace Nan;
+using namespace std;
 
 class ALCaptureDevice : public ObjectWrap
 {

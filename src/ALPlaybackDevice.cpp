@@ -1,5 +1,4 @@
 #include "ALPlaybackDevice.h"
-#include <vector>
 
 ALPlaybackDevice::ALPlaybackDevice(ALCdevice* _device) : device(_device) {	
     uv_mutex_init(&async_lock);

@@ -34,9 +34,11 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 			alcCaptureSamples(device, captured, CAPTURE_SIZE);
 
 			progress.Send(captured, sampleSize);
+
+			delete captured;
 		}
 
-		sleep(0);
+		sleep(1);
 	}
 }
 
@@ -45,7 +47,7 @@ void ALCaptureWorker::HandleProgressCallback(const char* data, size_t size)
 	Nan::HandleScope scope;
 
 	Local<Value> args[] = {
-		Nan::NewBuffer((char*)data, (uint32_t)size).ToLocalChecked()
+		Nan::CopyBuffer((char*)data, (uint32_t)size).ToLocalChecked()
 	};
     callback->Call(1, args);
 }

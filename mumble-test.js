@@ -1,10 +1,13 @@
-var audio = require('./index');
+
 var mumble = require('electron-mumble');
+var audio = require('./index');
+
+console.log('creating...');
 var speaker = new audio.PlaybackDevice();
 var source = new audio.CaptureDevice();
 var out_stream = null;
 
-console.log( 'Connecting...' );
+console.log( 'Connecting to: ' +  process.env.MUMBLE_SERVER );
 mumble.connect( process.env.MUMBLE_SERVER, {}, function ( error, connection ) {
     if( error ) { throw new Error( error ); }
 

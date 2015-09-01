@@ -1,3 +1,3 @@
-var bindings = require('bindings')('openal-' + process.arch);
+var bindings = require('bindings')('node-mumble-audio-' + process.arch);
 
 module.exports = bindings;

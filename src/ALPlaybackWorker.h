@@ -1,9 +1,8 @@
 #pragma once
 
-#include <node.h>
-#include <node_buffer.h>
-#include <nan.h>
 #include <v8.h>
+#include <node.h>
+#include <nan.h>
 #include <iostream>
 #include <queue>
 
