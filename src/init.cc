@@ -1,6 +1,3 @@
-
-//#include <v8.h>
-//#include <nan.h>
 #include <delay_load_hook.h>
 
 #include "ALCaptureDevice.h"
