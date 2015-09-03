@@ -69,7 +69,7 @@ NAN_METHOD(ALPlaybackDevice::GetAll) {
 
 	int deviceCount = (int)devices.size() + (int)captureDevices.size();
 	Local<Array> results = Nan::New<Array>(deviceCount);
-	for(int i = 0; i < devices.size(); i++) {
+	for(uint32_t i = 0; i < devices.size(); i++) {
 		ALCdevice* device = devices.at(i);
 		Local<Object> obj = Nan::New<Object>();
 
@@ -85,7 +85,7 @@ NAN_METHOD(ALPlaybackDevice::GetAll) {
 		alcCloseDevice( device );
 	}
 
-	for(int i = 0; i < captureDevices.size(); i++) {
+	for(uint32_t i = 0; i < captureDevices.size(); i++) {
 		ALCdevice* device = captureDevices.at(i);
 		Local<Object> obj = Nan::New<Object>();
 
