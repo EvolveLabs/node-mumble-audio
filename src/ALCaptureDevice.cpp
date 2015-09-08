@@ -42,7 +42,7 @@ NAN_METHOD(ALCaptureDevice::On) {
 
 	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(info.This());
 
-	auto arg0 = info[0].As<String>();
+	// auto arg0 = info[0].As<String>();
 	// todo: switch on arg0 value...
 
 	device->onData = new Callback(info[1].As<Function>());

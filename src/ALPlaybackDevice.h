@@ -17,7 +17,7 @@ using namespace v8;
 
 class ALPlaybackDevice : public ObjectWrap {
 	public:
-		ALPlaybackDevice::ALPlaybackDevice(ALCdevice* device);
+		ALPlaybackDevice(ALCdevice* device);
 		~ALPlaybackDevice();
 
 		static void Init(Handle<Object> exports);
