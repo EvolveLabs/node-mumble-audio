@@ -2,6 +2,7 @@
   'targets': [
     {
       'target_name': 'node-mumble-audio-<@(target_arch)',
+      'win_delay_load_hook': 'false',
       'sources': [ 
         "src/init.cc",
         "src/ALCaptureDevice.cpp", 
