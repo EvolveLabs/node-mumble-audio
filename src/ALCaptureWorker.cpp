@@ -38,7 +38,7 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 			delete captured;
 		}
 
-		sleep(1);
+		sleep(0);
 	}
 }
 

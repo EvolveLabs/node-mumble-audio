@@ -96,6 +96,6 @@ void ALPlaybackWorker::Execute()
 		RecoverBuffers();
 		EnqueuePendingData();
 		Play();
-		sleep(1);
+		sleep(0);
 	}
 }
