@@ -23,7 +23,7 @@ install:
   - npm install -g is-property # workaround until node 2.3.1
   - npm install -g node-gyp
   - npm install
-  - echo tag: $APPVEYOR_REPO_TAG
+  - echo tag? %APPVEYOR_REPO_TAG%
   # Publish builds when tagged
   # Or if APPVEYOR_REPO_COMMIT_MESSAGE contains [publish binary]
   - ps: if($env:APPVEYOR_REPO_TAG) { $env:PUBLISH_BINARY = 'true' }
