@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "ALPlaybackWorker.h"
 
 ALPlaybackWorker::ALPlaybackWorker(Callback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue, bool* _playing) 
@@ -102,6 +103,7 @@ void ALPlaybackWorker::Execute()
 	do
 	{
 		alGetSourcei(playbackSources[0], AL_SOURCE_STATE, &state);
+		sleep(0);
 	}
 	while(state == AL_PLAYING);
 }

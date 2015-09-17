@@ -42,8 +42,8 @@
             },
             'link_settings': {
               'libraries': [
-                'OpenAL.framework',
-              ],
+                '<(module_root_dir)/deps/bin/<(target_arch)/mac/AL/libopenal.1.16.0.dylib',
+              ]
             }
           }
         ],
@@ -60,8 +60,8 @@
               'VCLinkerTool': {
                 'DelayLoadDLLs': [ 'node.dll', 'iojs.exe', 'node.exe' ],
                 'AdditionalOptions': [ '/ignore:4199' ],
-              },
-            },
+              }
+            }
           }
         ]
       ]
@@ -73,21 +73,34 @@
       'type': 'none',
       'dependencies': ['node-mumble-audio-<@(target_arch)'],
       'target_conditions': [
-          [ 'OS=="win"', {
-            'actions': [
-              {
-                'action_name': 'soft_oal',
-                'inputs': [
-                    '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll'
-                ],
-                'outputs': [
-                    '<@(PRODUCT_DIR)/openal32.dll'
-                ],
-                'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll', '<@(PRODUCT_DIR)/openal32.dll']
-              }
-            ]
-          }
-        ]
+        [ 'OS=="win"', {
+          'actions': [
+            {
+              'action_name': 'soft_oal',
+              'inputs': [
+                  '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll'
+              ],
+              'outputs': [
+                  '<@(PRODUCT_DIR)/openal32.dll'
+              ],
+              'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll', '<@(PRODUCT_DIR)/openal32.dll']
+            }
+          ]
+        }],
+        [ 'OS=="mac"', {
+          'actions': [
+            {
+              'action_name': 'soft_oal',
+              'inputs': [
+                '<(module_root_dir)/deps/bin/<@(target_arch)/mac/AL/libopenal.1.16.0.dylib'
+              ],
+              'outputs': [
+                '<@(PRODUCT_DIR)/libopenal.1.16.0.dylib'
+              ],
+              'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/mac/AL/libopenal.1.16.0.dylib', '<@(PRODUCT_DIR)/libopenal.1.16.0.dylib']
+            }
+          ]
+        }]
       ]
     }
   ]
