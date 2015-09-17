@@ -1,0 +1,61 @@
+git:
+  depth: 10
+
+matrix:
+  include:
+    - os: linux
+      env: CONFIGURATION=release ARCH=x64
+    - os: linux
+      env: CONFIGURATION=release ARCH=ia32
+    - os: linux
+      env: CONFIGURATION=debug   ARCH=x64
+    - os: linux
+      env: CONFIGURATION=debug   ARCH=ia32
+    - os: osx
+      env: CONFIGURATION=release ARCH=x64
+    - os: osx
+      env: CONFIGURATION=debug   ARCH=x64
+
+env:
+  global:
+    - PATH: ./node_modules/electron-updater-tools/bin:$PATH
+    - PUBLISH_BINARY: false
+    - NODE_VERSION: 2.5.0
+    # Other available variables:
+    # s3accessKeyId
+    # s3secretAccessKey
+
+before_install:
+  # nvm is not yet supported on osx, manually install
+  - git clone https://github.com/creationix/nvm.git /tmp/.nvm
+  - source /tmp/.nvm/nvm.sh
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  # native dependencies
+  - if [ $TRAVIS_OS_NAME == "linux" ]; then
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y;
+      sudo apt-get update -qq;
+      sudo apt-get install -qq gcc-4.8 g++-4.8 gcc-4.8.multilib g++-4.8-multilib libelf-dev;
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8;
+    fi
+  # Only Publish when building a tag
+  - if [ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]; then PUBLISH_BINARY=true; fi;
+  # or if we put [publish binary] in the commit message
+  - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+  - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
+
+install:
+  # npm dependencies
+  - npm install node-gyp -g
+  - npm install
+
+script:
+  - elb configure $ARCH $CONFIGURATION
+
+after_success:
+  # pack the binaries for this platform
+  - elpack --arch $ARCH --configuration $CONFIGURATION
+  # publish to s3
+  - if [ $PUBLISH_BINARY == true ]; then
+      elpub -b evolve-bin -i $s3accessKeyId -k $s3secretAccessKey -a $ARCH -C $CONFIGURATION; 
+    fi
