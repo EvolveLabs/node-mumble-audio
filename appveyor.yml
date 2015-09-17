@@ -39,6 +39,6 @@ after_build:
   - node %bin_dir%/elpack --arch %ARCH% --configuration %CONF%
 
 deploy_script:
-  - echo "arch, conf: %ARCH% %CONF%"
+  - echo %ARCH% %CONF%
   - ehco "publish? %PUBLISH_BINARY%"
   - if "%PUBLISH_BINARY%" == "true" ( node %bin_dir%/elpub -b evolve-bin -i %s3accessKeyId% -k %s3secretAccessKey% -a %ARCH% -C %CONF% )
