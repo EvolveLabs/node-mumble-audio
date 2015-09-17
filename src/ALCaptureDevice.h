@@ -23,9 +23,11 @@ class ALCaptureDevice : public ObjectWrap
 
 		static NAN_METHOD(New);
 		static NAN_METHOD(Start);
+		static NAN_METHOD(Stop);
 		static NAN_METHOD(On);
 
 	private:
-		ALCdevice*		device;
-		Callback*		onData;
+		ALCdevice*			device;
+		Callback*			onData;
+		bool				capturing;
 };

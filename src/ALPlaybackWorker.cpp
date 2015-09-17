@@ -1,10 +1,11 @@
 #include "ALPlaybackWorker.h"
 
-ALPlaybackWorker::ALPlaybackWorker(Callback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue) 
+ALPlaybackWorker::ALPlaybackWorker(Callback *callback, ALCdevice* _device, uv_mutex_t* _async_lock, queue<ALPlaybackData*>* _dataQueue, bool* _playing) 
 : 	AsyncWorker(callback),
 	device(_device),
 	async_lock(_async_lock),
-	dataQueue(_dataQueue)
+	dataQueue(_dataQueue),
+	playing(_playing)
 { 
 	audioContext = alcCreateContext(device, NULL);
 
@@ -39,8 +40,6 @@ void ALPlaybackWorker::RecoverBuffers()
 		{
 			bufferQueue.push(unqueuedBuffers[i]);
 		}
-
-		if(availableBuffers > 1) cout << "freeing " << availableBuffers << " buffers" << endl;
 	}
 }
 
@@ -60,7 +59,7 @@ void ALPlaybackWorker::EnqueuePendingData()
 	{
 		if (bufferQueue.empty())
 		{
-			cout << "dropping data..." << endl;
+			cout << "dropping audio data..." << endl;
 		}
 		else
 		{
@@ -91,11 +90,18 @@ void ALPlaybackWorker::Play()
 // should go on `this`.
 void ALPlaybackWorker::Execute()
 {
-	while(true)
+	while(*this->playing)
 	{
 		RecoverBuffers();
 		EnqueuePendingData();
 		Play();
-		sleep(1);
+		sleep(0);
 	}
+
+	ALint state = 0;
+	do
+	{
+		alGetSourcei(playbackSources[0], AL_SOURCE_STATE, &state);
+	}
+	while(state == AL_PLAYING);
 }

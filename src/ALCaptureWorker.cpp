@@ -1,8 +1,9 @@
 #include "ALCaptureWorker.h"
 
-ALCaptureWorker::ALCaptureWorker(Callback *callback, ALCdevice* _device) 
-: AsyncProgressWorker(callback),
-	device(_device)
+ALCaptureWorker::ALCaptureWorker(Callback *callback, ALCdevice* _device, bool* _capturing) : 
+	AsyncProgressWorker(callback),
+	device(_device),
+	capturing(_capturing)
 {
 }
   
@@ -21,8 +22,8 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 
 	alcCaptureStart(device);
 
-	while(true) {
-
+	while(*this->capturing)
+	{
 		alcGetIntegerv(device, ALC_CAPTURE_SAMPLES, 1, &samplesIn);
 
 		if (samplesIn > CAPTURE_SIZE) {
@@ -33,21 +34,27 @@ void ALCaptureWorker::Execute(const ExecutionProgress& progress)
 
 			alcCaptureSamples(device, captured, CAPTURE_SIZE);
 
-			progress.Send(captured, sampleSize);
+			if (*this->capturing)
+			{
+				progress.Send(captured, sampleSize);
+			}
 
 			delete captured;
 		}
 
-		sleep(1);
+		sleep(0);
 	}
 }
 
 void ALCaptureWorker::HandleProgressCallback(const char* data, size_t size)
 {
 	Nan::HandleScope scope;
-
-	Local<Value> args[] = {
-		Nan::CopyBuffer((char*)data, (uint32_t)size).ToLocalChecked()
-	};
-    callback->Call(1, args);
+	if (*this->capturing)
+	{
+		Local<Value> args[] =
+		{
+			Nan::CopyBuffer((char*)data, (uint32_t)size).ToLocalChecked()
+		};
+	    callback->Call(1, args);
+	}
 }

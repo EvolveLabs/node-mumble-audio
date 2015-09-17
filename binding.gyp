@@ -8,7 +8,8 @@
         "src/ALCaptureDevice.cpp", 
         "src/ALCaptureWorker.cpp",
         "src/ALPlaybackDevice.cpp",
-        "src/ALPlaybackWorker.cpp"
+        "src/ALPlaybackWorker.cpp",
+        "src/ALDeviceEnumeration.cpp",
       ],
       'include_dirs': [
         "deps/includes",

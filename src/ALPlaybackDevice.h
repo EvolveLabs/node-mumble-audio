@@ -21,15 +21,15 @@ class ALPlaybackDevice : public ObjectWrap {
 		~ALPlaybackDevice();
 
 		static void Init(Handle<Object> exports);
-		
-		static NAN_METHOD(GetAll);
-		static NAN_METHOD(New);
 
+		static NAN_METHOD(New);
 		static NAN_METHOD(Play);
+		static NAN_METHOD(Stop);
 		static NAN_METHOD(Write);
 
 	private:		
 		ALCdevice* 				device;
 		uv_mutex_t	 			async_lock;
 		queue<ALPlaybackData*> 	buffers;
+		bool					playing;					
 };

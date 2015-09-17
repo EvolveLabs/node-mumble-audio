@@ -19,7 +19,7 @@ using namespace std;
 
 class ALCaptureWorker : public AsyncProgressWorker {
 public:
-	ALCaptureWorker(Callback *callback, ALCdevice* device);
+	ALCaptureWorker(Callback *callback, ALCdevice* device, bool* capturing);
 	~ALCaptureWorker();
 
 	void Execute (const ExecutionProgress& progress);
@@ -28,4 +28,5 @@ public:
 
 private:
 	ALCdevice*		device;
+	bool*			capturing;
 };

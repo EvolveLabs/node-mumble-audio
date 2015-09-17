@@ -38,7 +38,7 @@ public:
 
 class ALPlaybackWorker : public AsyncWorker {
 public:
-	ALPlaybackWorker(Callback *callback, ALCdevice* device, uv_mutex_t* async_lock, queue<ALPlaybackData*>* dataQueue);
+	ALPlaybackWorker(Callback *callback, ALCdevice* device, uv_mutex_t* async_lock, queue<ALPlaybackData*>* dataQueue, bool* playing);
 	~ALPlaybackWorker();
 
 	void Execute ();
@@ -54,6 +54,7 @@ private:
 	ALuint					playbackBuffers[PLAYBACK_NUM_BUF];
 	ALuint					playbackSources[1];
 
+	bool*					playing;
 	uv_mutex_t*				async_lock;
 	queue<ALPlaybackData*>*	dataQueue;
 	queue<ALuint>			bufferQueue;

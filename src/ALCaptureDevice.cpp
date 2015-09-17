@@ -1,7 +1,8 @@
 #include "ALCaptureDevice.h"
 
-ALCaptureDevice::ALCaptureDevice(ALCdevice* _device) 
-	: device(_device)
+ALCaptureDevice::ALCaptureDevice(ALCdevice* _device) : 
+	device(_device),
+	capturing(false)
 {
 }
 
@@ -17,14 +18,34 @@ void ALCaptureDevice::Init(Handle<Object> exports) {
 
 	tpl->PrototypeTemplate()->Set(Nan::New<String>("on").ToLocalChecked(), Nan::New<FunctionTemplate>(On)->GetFunction());
 	tpl->PrototypeTemplate()->Set(Nan::New<String>("start").ToLocalChecked(), Nan::New<FunctionTemplate>(Start)->GetFunction());
+	tpl->PrototypeTemplate()->Set(Nan::New<String>("stop").ToLocalChecked(), Nan::New<FunctionTemplate>(Stop)->GetFunction());
 
 	exports->Set(Nan::New<String>("CaptureDevice").ToLocalChecked(), tpl->GetFunction());
 }
 
 NAN_METHOD(ALCaptureDevice::New) {
 
-	// Get Default audio device
-	auto captureDeviceName = alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+	ALCchar* captureDeviceName = NULL;
+
+	if ( info.Length() > 1)
+	{
+		return Nan::ThrowTypeError("Invalid number of args.");
+	}
+
+	if ( info.Length() == 1)
+	{
+		if (!info[0]->IsObject())
+		{
+			return Nan::ThrowTypeError("Invalid argument.");
+		} 
+		else
+		{
+			Local<Object> obj = info[0].As<Object>();
+			Local<String> name = Nan::Get(obj, Nan::New<String>("name").ToLocalChecked()).ToLocalChecked()->ToString();
+			v8::String::Utf8Value val(name);
+			captureDeviceName = *val;
+		}
+	}
 
 	// Open capture device
 	auto device = alcCaptureOpenDevice(captureDeviceName, CAPTURE_SAMPLE_RATE, AL_FORMAT_MONO16, CAPTURE_SAMPLE_RATE / 2);
@@ -50,6 +71,24 @@ NAN_METHOD(ALCaptureDevice::On) {
 }
 
 NAN_METHOD(ALCaptureDevice::Start) {
+
 	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(info.This());
-	Nan::AsyncQueueWorker(new ALCaptureWorker(device->onData, device->device));
+
+	if ( device->capturing ) {
+		return Nan::ThrowTypeError("Already started.");
+	}
+
+	device->capturing = true;
+	Nan::AsyncQueueWorker(new ALCaptureWorker(device->onData, device->device, &device->capturing));
+}
+
+NAN_METHOD(ALCaptureDevice::Stop) {
+
+	auto device = ObjectWrap::Unwrap<ALCaptureDevice>(info.This());
+
+	if ( !device->capturing ) {
+		return Nan::ThrowTypeError("Not started.");	
+	}
+
+	device->capturing = false;
 }

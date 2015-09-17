@@ -21,7 +21,7 @@
   ],
   "engines": {
     "node": ">=3.2.0",
-    "electron": "~0.31.0"
+    "electron": "~0.32.0"
   },
   "binaries": [
     "https://s3.amazonaws.com/evolve-bin/{name}/{name}-{version}-{platform}-{arch}-{configuration}.tgz"

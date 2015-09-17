@@ -4,3 +4,4 @@ node_modules/
 *.sublime-workspace
 *.sublime-project
 *.log
+*.tgz

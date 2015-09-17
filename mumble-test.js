@@ -3,8 +3,22 @@ var mumble = require('electron-mumble');
 var audio = require('./index');
 
 console.log('creating...');
-var speaker = new audio.PlaybackDevice();
-var source = new audio.CaptureDevice();
+var devices = audio.devices();
+console.log(require('util').inspect(devices));
+
+var output;
+var capture;
+devices.forEach(function (device) {
+    if (device.kind == "output" && device.default) {
+        output = device;
+    }
+    if (device.kind == "capture" && device.default) {
+        capture = device;
+    }
+})
+
+var speaker = new audio.PlaybackDevice(output);
+var source = new audio.CaptureDevice(capture);
 var out_stream = null;
 
 console.log( 'Connecting to: ' +  process.env.MUMBLE_SERVER );
