@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "ALCaptureWorker.h"
 
 ALCaptureWorker::ALCaptureWorker(Callback *callback, ALCdevice* _device, bool* _capturing) : 
