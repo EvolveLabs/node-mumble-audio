@@ -7,7 +7,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-#include "AlCaptureWorker.h"
+#include "ALCaptureWorker.h"
 
 using namespace v8;
 using namespace Nan;

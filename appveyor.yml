@@ -3,7 +3,7 @@ platform: x64
 version: "{build}"
 
 environment:
-  nodejs_version: "2.2.1"
+  nodejs_version: "3.1.0"
   publish_binary: false
   bin_dir: ./node_modules/electron-updater-tools/bin
   matrix:
