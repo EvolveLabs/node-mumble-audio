@@ -16,6 +16,11 @@
         "<!(node -e \"require('nan')\")",
         "<!(node -e \"require('electron-updater-tools')\")"
       ],
+      # "msbuild_settings": {
+      #     "Link": {
+      #         "ImageHasSafeExceptionHandlers": "false"
+      #     }
+      # },
       'conditions': [
         ['OS=="linux"',
           {
@@ -60,7 +65,10 @@
               'VCLinkerTool': {
                 'DelayLoadDLLs': [ 'node.dll', 'iojs.exe', 'node.exe' ],
                 'AdditionalOptions': [ '/ignore:4199' ],
-              }
+              },
+              # "Link": {
+              #   "ImageHasSafeExceptionHandlers": "false"
+              # }
             }
           }
         ]
@@ -76,14 +84,14 @@
         [ 'OS=="win"', {
           'actions': [
             {
-              'action_name': 'soft_oal',
+              'action_name': 'OpenAL32-Copy',
               'inputs': [
-                  '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll'
+                  '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/OpenAL32.dll'
               ],
               'outputs': [
-                  '<@(PRODUCT_DIR)/openal32.dll'
+                  '<@(PRODUCT_DIR)/OpenAL32.dll'
               ],
-              'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/soft_oal.dll', '<@(PRODUCT_DIR)/openal32.dll']
+              'action': ['cp', '<(module_root_dir)/deps/bin/<@(target_arch)/win/AL/OpenAL32.dll', '<@(PRODUCT_DIR)/OpenAL32.dll']
             }
           ]
         }],
