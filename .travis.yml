@@ -3,14 +3,14 @@ git:
 
 matrix:
   include:
-    - os: linux
-      env: CONFIGURATION=release ARCH=x64
-    - os: linux
-      env: CONFIGURATION=release ARCH=ia32
-    - os: linux
-      env: CONFIGURATION=debug   ARCH=x64
-    - os: linux
-      env: CONFIGURATION=debug   ARCH=ia32
+    # - os: linux
+    #   env: CONFIGURATION=release ARCH=x64
+    # - os: linux
+    #   env: CONFIGURATION=release ARCH=ia32
+    # - os: linux
+    #   env: CONFIGURATION=debug   ARCH=x64
+    # - os: linux
+    #   env: CONFIGURATION=debug   ARCH=ia32
     - os: osx
       env: CONFIGURATION=release ARCH=x64
     - os: osx
