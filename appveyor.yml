@@ -40,5 +40,5 @@ after_build:
 
 deploy_script:
   - echo %ARCH% %CONF%
-  - ehco "publish? %PUBLISH_BINARY%"
+  - echo "publish? %PUBLISH_BINARY%"
   - if "%PUBLISH_BINARY%" == "true" ( node %bin_dir%/elpub -b evolve-bin -i %s3accessKeyId% -k %s3secretAccessKey% -a %ARCH% -C %CONF% )
