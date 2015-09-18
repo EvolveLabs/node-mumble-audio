@@ -16,11 +16,6 @@
         "<!(node -e \"require('nan')\")",
         "<!(node -e \"require('electron-updater-tools')\")"
       ],
-      # "msbuild_settings": {
-      #     "Link": {
-      #         "ImageHasSafeExceptionHandlers": "false"
-      #     }
-      # },
       'conditions': [
         ['OS=="linux"',
           {
@@ -49,7 +44,19 @@
               'libraries': [
                 '<(module_root_dir)/deps/bin/<(target_arch)/mac/AL/libopenal.1.16.0.dylib',
               ]
-            }
+            },
+            'postbuilds': [
+              {
+                'postbuild_name': 'Make Relative Path to libopenal',
+                'action': [
+                  'install_name_tool',
+                  '-change',
+                  'libopenal.1.16.0.dylib',
+                  '@loader_path/libopenal.1.16.0.dylib',
+                  '<@(PRODUCT_DIR)/node-mumble-audio-<@(target_arch).node'
+                ]
+              }
+            ]
           }
         ],
         ['OS=="win"',
@@ -59,16 +66,13 @@
             ],
             'libraries': [
               "-lShlwapi.lib",
-              "<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
+              "-L<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
             ],
             'msvs_settings': {
               'VCLinkerTool': {
                 'DelayLoadDLLs': [ 'node.dll', 'iojs.exe', 'node.exe' ],
                 'AdditionalOptions': [ '/ignore:4199' ],
-              },
-              # "Link": {
-              #   "ImageHasSafeExceptionHandlers": "false"
-              # }
+              }
             }
           }
         ]
@@ -98,7 +102,7 @@
         [ 'OS=="mac"', {
           'actions': [
             {
-              'action_name': 'soft_oal',
+              'action_name': 'copy_libopenal',
               'inputs': [
                 '<(module_root_dir)/deps/bin/<@(target_arch)/mac/AL/libopenal.1.16.0.dylib'
               ],
