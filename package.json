@@ -1,6 +1,6 @@
 {
   "name": "node-mumble-audio",
-  "version": "v0.2.0",
+  "version": "0.2.1",
   "scripts": {
     "install": "bash ./node_modules/.bin/elinst"
   },
