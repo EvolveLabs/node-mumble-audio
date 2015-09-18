@@ -66,7 +66,7 @@
             ],
             'libraries': [
               "-lShlwapi.lib",
-              "-L<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
+              "<(module_root_dir)/deps/lib/<@(target_arch)/win/AL/OpenAL32.lib"
             ],
             'msvs_settings': {
               'VCLinkerTool': {
