@@ -24,7 +24,7 @@ install:
   - npm install
   # Publish builds when tagged
   # Or if APPVEYOR_REPO_COMMIT_MESSAGE contains [publish]
-  - echo message: %APPVEYOR_REPO_COMMIT_MESSAGE%
+  - echo message %APPVEYOR_REPO_COMMIT_MESSAGE%
   - ps: if($env:APPVEYOR_REPO_TAG -ne "false") { $env:PUBLISH_BINARY = 'true' }
   - ps: if($env:APPVEYOR_REPO_COMMIT_MESSAGE.contains('[publish]')) { $env:PUBLISH_BINARY = 'true' }
 
