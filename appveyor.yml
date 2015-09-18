@@ -22,10 +22,10 @@ install:
   - npm install -g is-property # workaround until node 2.3.1
   - npm install -g node-gyp
   - npm install
-  # Publish builds when tagged
-  # Or if APPVEYOR_REPO_COMMIT_MESSAGE contains [publish]
   - echo message %APPVEYOR_REPO_COMMIT_MESSAGE%
+  # Publish builds when tagged
   - ps: if($env:APPVEYOR_REPO_TAG -ne "false") { $env:PUBLISH_BINARY = 'true' }
+  # Or if APPVEYOR_REPO_COMMIT_MESSAGE contains [publish]
   - ps: if($env:APPVEYOR_REPO_COMMIT_MESSAGE.contains('[publish]')) { $env:PUBLISH_BINARY = 'true' }
 
 test_script:
@@ -39,4 +39,4 @@ after_build:
 
 deploy_script:
   - echo publish? %PUBLISH_BINARY%
-  - if "%PUBLISH_BINARY%" == "true" ( node %bin_dir%/elpub -b evolve-bin -i %s3accessKeyId% -k %s3secretAccessKey% -a %ARCH% -C %CONF% )
+  - if "%PUBLISH_BINARY%" == "true" ( node %bin_dir%/elpub -b evolve-bin -i %s3accessKeyId% -k %s3secretAccessKey% -a %ARCH% -C %CONF% ) else ( echo not publishing. )
