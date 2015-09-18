@@ -1,0 +1,9 @@
+deps
+src
+build
+
+mumble-test.js
+*.yml
+*.gyp
+*.tgz
+.*
