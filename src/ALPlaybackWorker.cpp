@@ -95,14 +95,14 @@ void ALPlaybackWorker::Execute()
 		RecoverBuffers();
 		EnqueuePendingData();
 		Play();
-		sleep(0);
+		sleep_ms(1);
 	}
 
 	ALint state = 0;
 	do
 	{
 		alGetSourcei(playbackSources[0], AL_SOURCE_STATE, &state);
-		sleep(0);
+		sleep_ms(0);
 	}
 	while(state == AL_PLAYING);
 }
