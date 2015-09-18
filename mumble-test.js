@@ -1,10 +1,13 @@
 
 var mumble = require('electron-mumble');
 var audio = require('./index');
+var util = require('util');
 
-console.log('creating...');
+console.log(util.inspect(audio));
+
 var devices = audio.devices();
 console.log(require('util').inspect(devices));
+
 
 var output;
 var capture;
@@ -16,6 +19,10 @@ devices.forEach(function (device) {
         capture = device;
     }
 })
+
+console.log("total device count: " + devices.length);
+console.log("output: " + output.name);
+console.log("capture: " + capture.name);
 
 var speaker = new audio.PlaybackDevice(output);
 var source = new audio.CaptureDevice(capture);
@@ -44,7 +51,7 @@ var onInit = function() {
     source.start();
 
     // Connection is authenticated and usable.
-    speaker.play();
+    speaker.start();
 };
 
 var onVoice = function( pcmData ) {
