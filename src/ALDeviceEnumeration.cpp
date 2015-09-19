@@ -22,10 +22,17 @@ NAN_METHOD(ALDeviceEnumeration::Devices) {
 		return Nan::ThrowError("Enumeration extension is not present.");
 	}
 
+#if _WIN32
+	const ALchar* defaultDevice = alcGetString( NULL, ALC_DEFAULT_ALL_DEVICES_SPECIFIER );
+	const ALchar* defaultCaptureDevice = alcGetString( NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER );
+#else
+	// On darwin, for some reason, the default names are duplicated at the front of the names lists below.
+	// Set the default names to null and pull them off of the front of the list instead.
 	const ALchar* defaultDevice = NULL;
-	const ALchar* deviceNames = alcGetString( NULL, ALC_ALL_DEVICES_SPECIFIER );
-
 	const ALchar* defaultCaptureDevice = NULL;
+#endif
+
+	const ALchar* deviceNames = alcGetString( NULL, ALC_ALL_DEVICES_SPECIFIER );
 	const ALchar* captureDeviceNames = alcGetString( NULL, ALC_CAPTURE_DEVICE_SPECIFIER );
 
 	Local<Object> results = Nan::New<Array>(0);
@@ -42,7 +49,7 @@ NAN_METHOD(ALDeviceEnumeration::Devices) {
 		if (defaultDevice == NULL)
 		{
 			defaultDevice = deviceNames;
-		} 
+		}
 		else
 		{
 			Local<Object> obj = Nan::New<Object>();
